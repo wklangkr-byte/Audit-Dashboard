@@ -374,6 +374,45 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
 .am-close-btn{padding:6px 14px;border:1px solid var(--border2);border-radius:7px;background:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'IBM Plex Sans Thai',sans-serif;transition:all .15s}
 .am-close-btn:hover{border-color:#fca5a5;color:#ef4444;background:#fff5f5}
 
+/* ── SETTINGS ── */
+.settings-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
+.settings-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.settings-section-desc{font-size:12px;color:var(--text-muted);margin-bottom:18px}
+.settings-table{width:100%;border-collapse:collapse}
+.settings-table thead th{padding:9px 12px;font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:2px solid var(--border);background:var(--surface2);white-space:nowrap}
+.settings-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
+.settings-table tbody tr:hover{background:#f8fafc}
+.settings-table tbody tr:last-child{border-bottom:none}
+.settings-table tbody td{padding:10px 12px;font-size:13px;color:var(--text);vertical-align:middle}
+.st-zone{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12px;color:var(--accent-dark)}
+.st-regional-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.st-r1{background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd}
+.st-r2{background:#dcfce7;color:#15803d;border:1px solid #86efac}
+.st-r3{background:#fff7ed;color:#c2410c;border:1px solid #fdba74}
+.st-r4{background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc}
+.settings-input{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+.settings-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
+.settings-select{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .15s;cursor:pointer;-webkit-appearance:none}
+.settings-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
+.st-save-btn{padding:6px 16px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:7px;font-size:12px;font-weight:700;font-family:'IBM Plex Sans Thai',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
+.st-save-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,165,233,.3)}
+.st-save-btn:active{transform:translateY(0)}
+.st-cancel-btn{padding:6px 14px;background:none;border:1px solid var(--border2);border-radius:7px;font-size:12px;font-weight:600;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.st-cancel-btn:hover{border-color:#fca5a5;color:#ef4444;background:#fff5f5}
+.settings-edit-row{display:flex;align-items:center;gap:8px}
+.settings-edit-row .settings-input{flex:1}
+.changed-row{background:#fffbeb !important}
+.changed-row td:first-child{border-left:3px solid #f59e0b}
+.settings-footer-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--border);background:var(--surface2);border-radius:0 0 var(--radius) var(--radius);flex-wrap:wrap;gap:10px}
+.st-apply-btn{padding:9px 22px;background:linear-gradient(135deg,#059669,#34d399);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:'IBM Plex Sans Thai',sans-serif;cursor:pointer;transition:all .15s;box-shadow:0 4px 12px rgba(5,150,105,.25)}
+.st-apply-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(5,150,105,.35)}
+.st-apply-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.st-reset-btn{padding:9px 18px;background:none;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.st-reset-btn:hover{border-color:#fca5a5;color:#ef4444;background:#fff5f5}
+.change-badge{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
+.settings-info-box{background:var(--accent-bg);border:1px solid #bae6fd;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+.settings-info-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.settings-info-text{font-size:12px;color:var(--accent-dark);line-height:1.6}
 </style>
 </head>
 <body>
@@ -454,6 +493,7 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
       <button class="nav-tab hidden" id="tab-stores" onclick="switchPage('stores')">✏️ Edit Status</button>
       <button class="nav-tab hidden" id="tab-zones" onclick="switchPage('zones')">📋 Zone Detail</button>
       <button class="nav-tab hidden" id="tab-area" onclick="switchPage('area')">👤 Area Manager</button>
+      <button class="nav-tab hidden" id="tab-settings" onclick="switchPage('settings')">⚙️ ตั้งค่า</button>
     </div>
   </div>
 
@@ -535,6 +575,11 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
             </table>
           </div>
         </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="page-settings" class="page">
+        <div id="settingsContent"></div>
       </div>
 
       <!-- AREA MANAGER -->
@@ -654,7 +699,7 @@ const RAW_ZONES = [
   { regional:"Regional 3", zone:"Zone12", inspector:"คุณ พจนีย์ กลั่นเขตกิจ",           stores:["ST8","ST51","ST54","ST82","ST108","ST128","ST130","ST141","ST144","ST154"],     complete:10, inprogress:0 },
   { regional:"Regional 3", zone:"Zone13", inspector:"คุณ เสถียร ผลขาว",                 stores:["ST5","ST30","ST40","ST109","ST129","ST134","ST148","ST162","ST168"],   complete:9, inprogress:0 },
   { regional:"Regional 3", zone:"Zone14", inspector:"คุณ รัตวัชร์ พงศ์วัจนาทิน",        stores:["ST15","ST26","ST44","ST60","ST66","ST84","ST101","ST131","ST132"],                  complete:9,  inprogress:0 },
-  { regional:"Regional 3", zone:"Zone15", inspector:"คุณ วรรณิภา บุญจริง",              stores:["ST36","ST39","ST43","ST53","ST76","ST110","ST125","ST169"],                         complete:8,  inprogress:0 },
+  { regional:"Regional 4", zone:"Zone15", inspector:"คุณ วรรณิภา บุญจริง",              stores:["ST36","ST39","ST43","ST53","ST76","ST110","ST125","ST169"],                         complete:8,  inprogress:0 },
   { regional:"Regional 4", zone:"Zone16", inspector:"คุณ บุษรา ไชยเสน",                 stores:["ST13","ST27","ST35","ST62","ST69","ST71","ST75","ST104","ST105","ST166"],      complete:10, inprogress:0 },
   { regional:"Regional 4", zone:"Zone17", inspector:"คุณ พงศิกร รังษีพลาสวัสดิ์",       stores:["ST9","ST22","ST29","ST31","ST59","ST64","ST77","ST85","ST153","ST163"],        complete:10, inprogress:0 }
 ];
@@ -916,7 +961,7 @@ function doLogin() {
 
 function setupRoleUI() {
   if (currentRole === 'admin') {
-    ['tab-dashboard','tab-stores','tab-zones','tab-area'].forEach(id => document.getElementById(id).classList.remove('hidden'));
+    ['tab-dashboard','tab-stores','tab-zones','tab-area','tab-settings'].forEach(id => document.getElementById(id).classList.remove('hidden'));
     switchPage('dashboard');
   } else {
     // user (soa): dashboard only — read-only view
@@ -924,6 +969,7 @@ function setupRoleUI() {
     document.getElementById('tab-stores').classList.add('hidden');
     document.getElementById('tab-zones').classList.add('hidden');
     document.getElementById('tab-area').classList.remove('hidden');
+    document.getElementById('tab-settings').classList.add('hidden');
     // hide filter bar edit controls and store edit interaction
     switchPage('dashboard');
   }
@@ -936,7 +982,7 @@ function doLogout() {
   document.getElementById('loginError').classList.remove('show');
   document.getElementById('appShell').classList.remove('visible');
   document.getElementById('loginPage').classList.add('active');
-  Object.keys({dashboard:1,stores:1,zones:1}).forEach(p => {
+  Object.keys({dashboard:1,stores:1,zones:1,settings:1}).forEach(p => {
     document.getElementById('tab-'+p).classList.add('hidden');
   });
   currentFilter = 'all';
@@ -1153,9 +1199,10 @@ document.getElementById('modalOverlay').addEventListener('click', e=>{ if(e.targ
 function switchPage(page) {
   currentPage=page;
   if (page==='area') setTimeout(renderAreaManager, 50);
+  if (page==='settings') setTimeout(renderSettings, 50);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('page-'+page); if(el) el.classList.add('active');
-  ['dashboard','stores','zones','area'].forEach(p=>{ const t=document.getElementById('tab-'+p); if(t) t.classList.toggle('active',p===page); });
+  ['dashboard','stores','zones','area','settings'].forEach(p=>{ const t=document.getElementById('tab-'+p); if(t) t.classList.toggle('active',p===page); });
   renderAll();
 }
 
@@ -1482,6 +1529,239 @@ const AM_STORE_NAMES = {
   "ST172":"สาขาบ้านไผ่","ST175":"สาขาแฮปปี้แทท","ST301":"สาขาพระราม4","ST303":"สาขาศิริมังคลาจารย์"
 };
 
+
+// ════════════════════════════════════════════════
+//  SETTINGS — Zone/Inspector Editor
+// ════════════════════════════════════════════════
+// Working copy of zones (editable); starts as deep clone of RAW_ZONES
+let settingsZones = RAW_ZONES.map(z => ({ ...z }));
+// Track which rows have been edited (index into settingsZones)
+const settingsChanged = new Set();
+
+const REGIONAL_LIST = ['Regional 1', 'Regional 2', 'Regional 3', 'Regional 4'];
+const REGIONAL_CLASS = {
+  'Regional 1': 'st-r1', 'Regional 2': 'st-r2',
+  'Regional 3': 'st-r3', 'Regional 4': 'st-r4'
+};
+
+function renderSettings() {
+  const el = document.getElementById('settingsContent');
+  if (!el) return;
+  const changedCount = settingsChanged.size;
+
+  el.innerHTML = `
+    <div class="settings-section">
+      <div class="settings-section-title">⚙️ ตั้งค่าข้อมูล Zone และผู้ตรวจสาขา</div>
+      <div class="settings-section-desc">แก้ไขชื่อผู้ตรวจ (Inspector) และ Regional ของแต่ละ Zone ได้โดยตรง · เฉพาะ Admin เท่านั้น</div>
+
+      <div class="settings-info-box">
+        <div class="settings-info-icon">ℹ️</div>
+        <div class="settings-info-text">
+          แก้ไขข้อมูลในตารางด้านล่าง จากนั้นกด <strong>✅ บันทึกการเปลี่ยนแปลง</strong> เพื่อให้มีผลทันที<br>
+          ข้อมูลที่แก้ไขจะมีผลกับ Dashboard, Zone Detail, Area Manager ทุกส่วน
+          ${changedCount > 0 ? `<br><span style="color:#d97706;font-weight:700">⚠️ มีการแก้ไข ${changedCount} Zone ที่ยังไม่ได้บันทึก</span>` : ''}
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="settings-table">
+          <thead><tr>
+            <th style="width:80px">Zone</th>
+            <th style="width:130px">Regional</th>
+            <th>ชื่อผู้ตรวจ (Inspector)</th>
+            <th style="width:80px">สาขา</th>
+            <th style="width:90px">จัดการ</th>
+          </tr></thead>
+          <tbody id="settingsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="settings-footer-bar">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          ${changedCount > 0
+            ? `<span class="change-badge">✏️ แก้ไข ${changedCount} รายการ</span>`
+            : `<span style="font-size:12px;color:var(--text-dim)">ยังไม่มีการแก้ไข</span>`
+          }
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="st-reset-btn" onclick="resetSettingsChanges()">↩️ รีเซ็ต</button>
+          <button class="st-apply-btn" onclick="applySettingsChanges()" ${changedCount === 0 ? 'disabled' : ''}>
+            ✅ บันทึกการเปลี่ยนแปลง ${changedCount > 0 ? `(${changedCount})` : ''}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderSettingsTable();
+}
+
+function renderSettingsTable() {
+  const tbody = document.getElementById('settingsTableBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = settingsZones.map((z, idx) => {
+    const isChanged = settingsChanged.has(idx);
+    const regClass = REGIONAL_CLASS[z.regional] || '';
+    return `<tr class="${isChanged ? 'changed-row' : ''}" id="srow-${idx}">
+      <td><span class="st-zone">${z.zone}</span></td>
+      <td>
+        <select class="settings-select" id="sreg-${idx}" onchange="onSettingsRegionalChange(${idx})">
+          ${REGIONAL_LIST.map(r =>
+            `<option value="${r}" ${z.regional === r ? 'selected' : ''}>${r}</option>`
+          ).join('')}
+        </select>
+      </td>
+      <td>
+        <div class="settings-edit-row">
+          <input type="text" class="settings-input" id="sinsp-${idx}"
+            value="${z.inspector}"
+            placeholder="ชื่อผู้ตรวจ..."
+            oninput="onSettingsInspectorChange(${idx})">
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent-dark);font-size:12px">
+        ${z.stores.length} สาขา
+      </td>
+      <td>
+        ${isChanged
+          ? `<span style="font-size:11px;color:#d97706;font-weight:700">✏️ แก้ไขแล้ว</span>`
+          : `<span style="font-size:11px;color:var(--text-dim)">—</span>`
+        }
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function onSettingsInspectorChange(idx) {
+  const input = document.getElementById(`sinsp-${idx}`);
+  if (!input) return;
+  const newVal = input.value.trim();
+  if (newVal !== RAW_ZONES[idx].inspector || settingsZones[idx].regional !== RAW_ZONES[idx].regional) {
+    settingsZones[idx].inspector = input.value; // keep raw input while typing
+    settingsChanged.add(idx);
+  } else {
+    settingsZones[idx].inspector = newVal;
+    settingsChanged.delete(idx);
+  }
+  // Update changed indicator on the row
+  const row = document.getElementById(`srow-${idx}`);
+  if (row) {
+    row.className = settingsChanged.has(idx) ? 'changed-row' : '';
+    const cell = row.cells[4];
+    if (cell) {
+      cell.innerHTML = settingsChanged.has(idx)
+        ? `<span style="font-size:11px;color:#d97706;font-weight:700">✏️ แก้ไขแล้ว</span>`
+        : `<span style="font-size:11px;color:var(--text-dim)">—</span>`;
+    }
+  }
+  // Update footer badge counts without full re-render
+  updateSettingsFooter();
+}
+
+function onSettingsRegionalChange(idx) {
+  const sel = document.getElementById(`sreg-${idx}`);
+  if (!sel) return;
+  settingsZones[idx].regional = sel.value;
+  if (settingsZones[idx].regional !== RAW_ZONES[idx].regional ||
+      settingsZones[idx].inspector !== RAW_ZONES[idx].inspector) {
+    settingsChanged.add(idx);
+  } else {
+    settingsChanged.delete(idx);
+  }
+  const row = document.getElementById(`srow-${idx}`);
+  if (row) {
+    row.className = settingsChanged.has(idx) ? 'changed-row' : '';
+    const cell = row.cells[4];
+    if (cell) {
+      cell.innerHTML = settingsChanged.has(idx)
+        ? `<span style="font-size:11px;color:#d97706;font-weight:700">✏️ แก้ไขแล้ว</span>`
+        : `<span style="font-size:11px;color:var(--text-dim)">—</span>`;
+    }
+  }
+  updateSettingsFooter();
+}
+
+function updateSettingsFooter() {
+  const cnt = settingsChanged.size;
+  // update badge
+  const footers = document.querySelectorAll('.settings-footer-bar');
+  footers.forEach(footer => {
+    const badgeArea = footer.querySelector('div:first-child');
+    if (badgeArea) {
+      badgeArea.innerHTML = cnt > 0
+        ? `<span class="change-badge">✏️ แก้ไข ${cnt} รายการ</span>`
+        : `<span style="font-size:12px;color:var(--text-dim)">ยังไม่มีการแก้ไข</span>`;
+    }
+    const applyBtn = footer.querySelector('.st-apply-btn');
+    if (applyBtn) {
+      applyBtn.disabled = cnt === 0;
+      applyBtn.textContent = `✅ บันทึกการเปลี่ยนแปลง${cnt > 0 ? ` (${cnt})` : ''}`;
+    }
+    // update info box warning
+    const infoEl = document.querySelector('.settings-info-text');
+    if (infoEl) {
+      const warnEl = infoEl.querySelector('span');
+      if (cnt > 0) {
+        if (!warnEl) {
+          infoEl.innerHTML += `<br><span style="color:#d97706;font-weight:700">⚠️ มีการแก้ไข ${cnt} Zone ที่ยังไม่ได้บันทึก</span>`;
+        } else {
+          warnEl.textContent = `⚠️ มีการแก้ไข ${cnt} Zone ที่ยังไม่ได้บันทึก`;
+        }
+      } else if (warnEl) {
+        warnEl.remove();
+      }
+    }
+  });
+}
+
+function applySettingsChanges() {
+  if (settingsChanged.size === 0) return;
+
+  // Flush any partially-typed inspector names
+  settingsChanged.forEach(idx => {
+    const input = document.getElementById(`sinsp-${idx}`);
+    if (input) settingsZones[idx].inspector = input.value.trim() || settingsZones[idx].inspector;
+  });
+
+  // Apply settingsZones → RAW_ZONES (mutate in place so all render functions pick up changes)
+  settingsZones.forEach((sz, idx) => {
+    RAW_ZONES[idx].inspector = sz.inspector;
+    RAW_ZONES[idx].regional  = sz.regional;
+  });
+
+  // Rebuild storeState metadata (zone/regional per store)
+  RAW_ZONES.forEach(z => {
+    z.stores.forEach(code => {
+      if (storeState[code]) {
+        storeState[code].regional = z.regional;
+        storeState[code].zone     = z.zone;
+      }
+    });
+  });
+
+  // Rebuild STORE_LOC_NAMES
+  RAW_ZONES.forEach(z => {
+    z.stores.forEach(s => { STORE_LOC_NAMES[s] = { zone: z.zone, regional: z.regional }; });
+  });
+
+  const cnt = settingsChanged.size;
+  settingsChanged.clear();
+
+  // Re-render all pages
+  renderAll();
+  renderSettings();
+  showToast(`✅ บันทึกแล้ว ${cnt} Zone — ข้อมูลอัปเดตทุกหน้าแล้ว`);
+}
+
+function resetSettingsChanges() {
+  if (settingsChanged.size === 0) { showToast('ไม่มีการแก้ไขที่ต้องรีเซ็ต'); return; }
+  // Restore settingsZones from RAW_ZONES
+  settingsZones = RAW_ZONES.map(z => ({ ...z }));
+  settingsChanged.clear();
+  renderSettings();
+  showToast('↩️ รีเซ็ตแล้ว — ข้อมูลกลับสู่ค่าเดิม');
+}
 
 init();
 </script>
