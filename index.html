@@ -378,41 +378,123 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
 .settings-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
 .settings-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .settings-section-desc{font-size:12px;color:var(--text-muted);margin-bottom:18px}
-.settings-table{width:100%;border-collapse:collapse}
-.settings-table thead th{padding:9px 12px;font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:2px solid var(--border);background:var(--surface2);white-space:nowrap}
-.settings-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
-.settings-table tbody tr:hover{background:#f8fafc}
-.settings-table tbody tr:last-child{border-bottom:none}
-.settings-table tbody td{padding:10px 12px;font-size:13px;color:var(--text);vertical-align:middle}
-.st-zone{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12px;color:var(--accent-dark)}
-.st-regional-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
 .st-r1{background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd}
 .st-r2{background:#dcfce7;color:#15803d;border:1px solid #86efac}
 .st-r3{background:#fff7ed;color:#c2410c;border:1px solid #fdba74}
 .st-r4{background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc}
-.settings-input{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
-.settings-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
-.settings-select{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .15s;cursor:pointer;-webkit-appearance:none}
-.settings-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
-.st-save-btn{padding:6px 16px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:7px;font-size:12px;font-weight:700;font-family:'IBM Plex Sans Thai',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
-.st-save-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,165,233,.3)}
-.st-save-btn:active{transform:translateY(0)}
-.st-cancel-btn{padding:6px 14px;background:none;border:1px solid var(--border2);border-radius:7px;font-size:12px;font-weight:600;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text-muted);cursor:pointer;transition:all .15s}
-.st-cancel-btn:hover{border-color:#fca5a5;color:#ef4444;background:#fff5f5}
-.settings-edit-row{display:flex;align-items:center;gap:8px}
-.settings-edit-row .settings-input{flex:1}
-.changed-row{background:#fffbeb !important}
-.changed-row td:first-child{border-left:3px solid #f59e0b}
-.settings-footer-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--border);background:var(--surface2);border-radius:0 0 var(--radius) var(--radius);flex-wrap:wrap;gap:10px}
+.settings-info-box{background:var(--accent-bg);border:1px solid #bae6fd;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+.settings-info-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.settings-info-text{font-size:12px;color:var(--accent-dark);line-height:1.6}
 .st-apply-btn{padding:9px 22px;background:linear-gradient(135deg,#059669,#34d399);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:'IBM Plex Sans Thai',sans-serif;cursor:pointer;transition:all .15s;box-shadow:0 4px 12px rgba(5,150,105,.25)}
 .st-apply-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(5,150,105,.35)}
 .st-apply-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .st-reset-btn{padding:9px 18px;background:none;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text-muted);cursor:pointer;transition:all .15s}
 .st-reset-btn:hover{border-color:#fca5a5;color:#ef4444;background:#fff5f5}
+
+/* Settings KPIs */
+.st-kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+@media(min-width:640px){.st-kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.st-kpi{padding:14px 16px;border-radius:var(--radius-sm);text-align:center;border:1px solid var(--border)}
+.st-kpi-val{font-size:28px;font-weight:700;font-family:'IBM Plex Mono',monospace;line-height:1}
+.st-kpi-label{font-size:11px;color:var(--text-muted);font-weight:600;margin-top:4px}
+
+/* Staff filter bar */
+.st-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.st-search{flex:1;min-width:140px;max-width:240px;padding:8px 14px;border:1.5px solid var(--border);
+  border-radius:20px;font-size:13px;color:var(--text);font-family:'IBM Plex Sans Thai',sans-serif;
+  background:var(--white);outline:none;-webkit-appearance:none}
+.st-search:focus{border-color:var(--accent)}
+.st-fbtn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);
+  font-family:'IBM Plex Sans Thai',sans-serif;transition:all .15s;white-space:nowrap}
+.st-fbtn:hover{border-color:var(--accent);color:var(--accent-dark)}
+.st-fbtn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-dark);font-weight:700}
+
+/* Staff cards */
+.st-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
+.st-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.st-card:hover{box-shadow:var(--shadow);transform:translateY(-1px);border-color:var(--accent)}
+.st-card.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(14,165,233,.15),var(--shadow)}
+.st-card-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.st-card-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:white;flex-shrink:0}
+.st-card-avatar.rsoa{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.st-card-avatar.soa{background:linear-gradient(135deg,var(--accent),var(--accent-dark))}
+.st-card-avatar.inven{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+.st-card-info{flex:1;min-width:0}
+.st-card-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-card-meta{display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap}
+.st-card-pos{font-size:10px;font-weight:700;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.st-card-pos.rsoa{background:#fef3c7;color:#92400e}
+.st-card-pos.soa{background:#e0f2fe;color:#0369a1}
+.st-card-pos.inven{background:#ede9fe;color:#6d28d9}
+.st-card-nick{font-size:11px;color:var(--text-dim)}
+.st-card-reg{font-size:10px;color:var(--text-dim);font-weight:600}
+.st-card-count{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;
+  font-family:'IBM Plex Mono',monospace;color:var(--accent-dark);flex-shrink:0}
+.st-card-count.zero{color:var(--text-dim)}
+.st-card-bar{height:4px;background:var(--gray-light);border-radius:99px;overflow:hidden;margin-top:8px}
+.st-card-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#34d399);border-radius:99px;transition:width .4s}
+
+/* Assignment Panel */
+.st-assign-panel{background:var(--white);border:1.5px solid var(--accent);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow);margin-bottom:20px;animation:fadeUp .2s ease both}
+.st-assign-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.st-assign-title{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.st-assign-close{padding:5px 12px;border:1px solid var(--border2);border-radius:7px;background:none;
+  font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'IBM Plex Sans Thai',sans-serif}
+.st-assign-close:hover{border-color:#fca5a5;color:#ef4444;background:#fff5f5}
+
+/* Assigned chips */
+.st-chips-area{margin-bottom:14px}
+.st-chips-label{font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.st-chips-wrap{display:flex;flex-wrap:wrap;gap:5px;min-height:32px;padding:8px 10px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.st-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 5px 3px 8px;border-radius:6px;
+  font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace;background:#d1fae5;color:#059669;border:1px solid #6ee7b7}
+.st-chip-x{width:16px;height:16px;border-radius:50%;border:none;background:rgba(0,0,0,.08);
+  color:#059669;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;
+  font-family:sans-serif;transition:background .12s}
+.st-chip-x:hover{background:rgba(220,38,38,.15);color:#dc2626}
+.st-chips-empty{font-size:12px;color:var(--text-dim);padding:4px 0}
+
+/* Branch picker */
+.st-picker{border-top:1px solid var(--border);padding-top:14px}
+.st-picker-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.st-picker-search{flex:1;min-width:120px;max-width:200px;padding:6px 12px;border:1.5px solid var(--border);
+  border-radius:20px;font-size:12px;color:var(--text);font-family:'IBM Plex Sans Thai',sans-serif;
+  background:var(--white);outline:none;-webkit-appearance:none}
+.st-picker-search:focus{border-color:var(--accent)}
+.st-picker-grid{display:flex;flex-wrap:wrap;gap:4px;max-height:200px;overflow-y:auto;
+  padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.st-pick-chip{padding:4px 9px;border-radius:6px;font-size:11px;font-weight:600;
+  font-family:'IBM Plex Mono',monospace;cursor:pointer;border:1.5px solid var(--border);
+  background:var(--white);color:var(--text-muted);transition:all .12s;white-space:nowrap}
+.st-pick-chip:hover{border-color:var(--accent);color:var(--accent-dark);background:var(--accent-bg)}
+.st-pick-chip.taken{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.st-pick-chip.taken:hover{border-color:var(--border);color:var(--text-dim);background:var(--white)}
+
+/* Unassigned section */
+.st-unassigned{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
+.st-unassigned-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.st-unassigned-chips{display:flex;flex-wrap:wrap;gap:4px}
+.st-un-chip{padding:4px 9px;border-radius:6px;font-size:11px;font-weight:600;
+  font-family:'IBM Plex Mono',monospace;background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+
+/* Settings footer */
+.settings-footer-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
+  border-top:1px solid var(--border);background:var(--surface2);border-radius:0 0 var(--radius) var(--radius);flex-wrap:wrap;gap:10px}
 .change-badge{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
-.settings-info-box{background:var(--accent-bg);border:1px solid #bae6fd;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
-.settings-info-icon{font-size:16px;flex-shrink:0;margin-top:1px}
-.settings-info-text{font-size:12px;color:var(--accent-dark);line-height:1.6}
+
+/* Quick action buttons */
+.st-quick-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.st-qbtn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);
+  font-family:'IBM Plex Sans Thai',sans-serif;transition:all .15s;display:flex;align-items:center;gap:5px}
+.st-qbtn:hover{border-color:var(--accent);color:var(--accent-dark);background:var(--accent-bg)}
+.st-qbtn.danger:hover{border-color:#fca5a5;color:#ef4444;background:#fff5f5}
 </style>
 </head>
 <body>
@@ -491,7 +573,7 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
     <div class="nav-tabs">
       <button class="nav-tab active" id="tab-dashboard" onclick="switchPage('dashboard')">📊 Dashboard</button>
       <button class="nav-tab hidden" id="tab-stores" onclick="switchPage('stores')">✏️ Edit Status</button>
-      <button class="nav-tab hidden" id="tab-zones" onclick="switchPage('zones')">📋 Zone Detail</button>
+      <button class="nav-tab hidden" id="tab-zones" onclick="switchPage('zones')">📋 ผู้ตรวจ / สาขา</button>
       <button class="nav-tab hidden" id="tab-area" onclick="switchPage('area')">👤 Area Manager</button>
       <button class="nav-tab hidden" id="tab-settings" onclick="switchPage('settings')">⚙️ ตั้งค่า</button>
     </div>
@@ -533,7 +615,7 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
           </div>
           <div>
             <div class="chart-section">
-              <div class="section-title" style="margin-bottom:6px">📊 Zone Progress Chart <span id="zoneChartCount"></span></div>
+              <div class="section-title" style="margin-bottom:6px">📊 ผู้ตรวจ — ความคืบหน้ารายบุคคล <span id="zoneChartCount"></span></div>
               <div style="display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap">
                 <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted)"><div style="width:10px;height:10px;border-radius:2px;background:#bbf7d0"></div>Complete</div>
                 <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted)"><div style="width:10px;height:10px;border-radius:2px;background:#fef08a"></div>In Progress</div>
@@ -558,17 +640,25 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
         <div class="stores-grid" id="storesGrid"></div>
       </div>
 
-      <!-- ZONES -->
+      <!-- INSPECTOR / BRANCH DETAIL -->
       <div id="page-zones" class="page">
+        <div class="store-controls" id="inspectorFilterBar">
+          <input type="text" class="search-input" id="inspectorSearch" placeholder="ค้นหาชื่อ / ชื่อเล่น..." oninput="renderZoneTable()">
+          <div class="filter-divider"></div>
+          <button class="filter-btn st-pos-flt active" onclick="setInspPosFilter('all',this)">ทั้งหมด</button>
+          <button class="filter-btn st-pos-flt" onclick="setInspPosFilter('rsoa',this)">RSOA</button>
+          <button class="filter-btn st-pos-flt" onclick="setInspPosFilter('soa',this)">SOA</button>
+          <button class="filter-btn st-pos-flt" onclick="setInspPosFilter('inven',this)">Inven</button>
+        </div>
         <div class="zone-table-wrap">
           <div class="zone-table-header">
-            <h3>รายละเอียดการตรวจสอบแต่ละ Zone</h3>
+            <h3>📋 ผู้รับผิดชอบตรวจสาขา — รายบุคคล</h3>
             <span id="zoneCount" style="font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace"></span>
           </div>
           <div class="table-scroll">
             <table>
               <thead><tr>
-                <th>Regional</th><th>Zone</th><th>ผู้ตรวจ</th><th>สาขา</th>
+                <th>Position</th><th>ชื่อผู้ตรวจ</th><th>Regional</th><th>สาขาที่รับผิดชอบ</th>
                 <th>Total</th><th>Complete</th><th>InProg</th><th>Pending</th><th>Progress</th><th>Status</th>
               </tr></thead>
               <tbody id="zoneTableBody"></tbody>
@@ -634,7 +724,7 @@ tbody td{padding:11px 14px;font-size:13px;color:var(--text)}
           <div class="table-scroll">
             <table class="am-branch-table">
               <thead><tr>
-                <th>Code</th><th>ชื่อสาขา</th><th>Zone</th><th>Regional</th><th>Status</th>
+                <th>Code</th><th>ชื่อสาขา</th><th>Zone</th><th>Regional</th><th>ผู้ตรวจ</th><th>Status</th>
               </tr></thead>
               <tbody id="amDetailTable"></tbody>
             </table>
@@ -703,6 +793,121 @@ const RAW_ZONES = [
   { regional:"Regional 4", zone:"Zone16", inspector:"คุณ บุษรา ไชยเสน",                 stores:["ST13","ST27","ST35","ST62","ST69","ST71","ST75","ST104","ST105","ST166"],      complete:10, inprogress:0 },
   { regional:"Regional 4", zone:"Zone17", inspector:"คุณ พงศิกร รังษีพลาสวัสดิ์",       stores:["ST9","ST22","ST29","ST31","ST59","ST64","ST77","ST85","ST153","ST163"],        complete:10, inprogress:0 }
 ];
+
+// ════════════════════════════════════════════════
+//  STAFF LIST (from Excel)
+// ════════════════════════════════════════════════
+const STAFF_LIST = [
+  { regional:"Regional 1", position:"RSOA",  name:"วัชระ กลางกระโทก",          nickname:"ตุ้ม",   posGroup:"rsoa" },
+  { regional:"Regional 1", position:"SOA 1", name:"พิชิต คันธาเวช",            nickname:"เอ",     posGroup:"soa" },
+  { regional:"Regional 1", position:"SOA 2", name:"ธีระพงษ์ อินจุ้มสาย",        nickname:"หนุ่ย",   posGroup:"soa" },
+  { regional:"Regional 1", position:"SOA 3", name:"มะลิวัลย์ โขงชัยภูมิ",       nickname:"เมย์",   posGroup:"soa" },
+  { regional:"Regional 1", position:"SOA 4", name:"สุมาลี หาญสว่าง",           nickname:"พิมพ์",  posGroup:"soa" },
+  { regional:"Regional 1", position:"SOA 5", name:"ลัดดาวัลย์ ธรรมศร",         nickname:"ดา",     posGroup:"soa" },
+  { regional:"Regional 1", position:"Inven 1", name:"ปิยบุตร คำทอง",           nickname:"ทอม",   posGroup:"inven" },
+  { regional:"Regional 1", position:"Inven 2", name:"เหมรัชต์ ไชยวัง",          nickname:"ท๊อป",   posGroup:"inven" },
+  { regional:"Regional 1", position:"Inven 3", name:"วารุณี สีโสพล",            nickname:"ปิ๊ก",    posGroup:"inven" },
+  { regional:"Regional 1", position:"Inven 4", name:"วรพจน์ สุวารัก",           nickname:"มอส",   posGroup:"inven" },
+  { regional:"Regional 2", position:"RSOA",  name:"วสุธรณ์ นิ่มนวลพงษ์",       nickname:"ป๊อก",   posGroup:"rsoa" },
+  { regional:"Regional 2", position:"SOA 6", name:"ภกรณ์กาญจ์ เมทินีพิศาลกุล", nickname:"แอน",   posGroup:"soa" },
+  { regional:"Regional 2", position:"SOA 7", name:"ธนกร วุฒิเดชเกรียงไกร",      nickname:"ก๊อต",   posGroup:"soa" },
+  { regional:"Regional 2", position:"SOA 8", name:"ศุจิกา พงศากาล",            nickname:"ออย",   posGroup:"soa" },
+  { regional:"Regional 2", position:"SOA 9", name:"เอกธัช นาวิกบุตร",          nickname:"อ๊อก",   posGroup:"soa" },
+  { regional:"Regional 2", position:"SOA 10",name:"อารีย์ นิ่มกลาง",           nickname:"แพรวา", posGroup:"soa" },
+  { regional:"Regional 2", position:"Inven 5", name:"อธิญา แก้วเรือง",          nickname:"ปอ",    posGroup:"inven" },
+  { regional:"Regional 2", position:"Inven 6", name:"นฤมล บุญยืน",             nickname:"มิน",    posGroup:"inven" },
+  { regional:"Regional 2", position:"Inven 7", name:"สุทธิวัฒ เย็นนิกรณ์",       nickname:"โอ๊ต",   posGroup:"inven" },
+  { regional:"Regional 2", position:"Inven 8", name:"สุพรรณรัตน์ ริมแจ้ง",       nickname:"เมย์",   posGroup:"inven" },
+  { regional:"Regional 2", position:"Inven 9", name:"พงษ์พิชญ์ เพียรนันท์ถาวร",  nickname:"แนน",   posGroup:"inven" },
+  { regional:"Regional 3", position:"RSOA",  name:"ณฐกร ศุภรัตนพงศ์",          nickname:"หนึ่ง",   posGroup:"rsoa" },
+  { regional:"Regional 3", position:"SOA 11",name:"ณัฐวัฒน์ เดชโนนสังข์",       nickname:"ท๊อป",   posGroup:"soa" },
+  { regional:"Regional 3", position:"SOA 12",name:"พจนีย์ กลั่นเขตกิจ",         nickname:"อ้อ",    posGroup:"soa" },
+  { regional:"Regional 3", position:"SOA 13",name:"เสถียร ผลขาว",              nickname:"เสถียร", posGroup:"soa" },
+  { regional:"Regional 3", position:"SOA 14",name:"รัตวัชร์ พงศ์วัจนาทิน",       nickname:"อาร์ต", posGroup:"soa" },
+  { regional:"Regional 3", position:"Inven 10",name:"สุชีรา ชิตังเม",           nickname:"เนท",   posGroup:"inven" },
+  { regional:"Regional 3", position:"Inven 11",name:"อัชราคม จันทรบูรณ์",       nickname:"อั๋น",   posGroup:"inven" },
+  { regional:"Regional 3", position:"Inven 12",name:"ณรงค์ ห้องแซง",            nickname:"เน",    posGroup:"inven" },
+  { regional:"Regional 3", position:"Inven 13",name:"ธนกฤต เจะรัมย์",           nickname:"เจ",    posGroup:"inven" },
+  { regional:"Regional 4", position:"RSOA",  name:"สุกัลยา ธัญญะพืช",          nickname:"ตุ้ม",    posGroup:"rsoa" },
+  { regional:"Regional 4", position:"SOA 15",name:"วรรณิภา บุญจริง",           nickname:"ติ๊ก",   posGroup:"soa" },
+  { regional:"Regional 4", position:"SOA 16",name:"บุษรา ไชยเสน",              nickname:"บุ๋ม",   posGroup:"soa" },
+  { regional:"Regional 4", position:"SOA 17",name:"พงศิกร รังษีพลาสวัสดิ์",      nickname:"ปอนด์", posGroup:"soa" },
+  { regional:"Regional 4", position:"Inven 14",name:"บุญนำพา ไหมชุม",           nickname:"ผึ้ง",   posGroup:"inven" },
+  { regional:"Regional 4", position:"Inven 15",name:"สุวิทย์ เซ่งบุญตั๋น",        nickname:"ไก่",    posGroup:"inven" }
+];
+
+// All store codes collected from RAW_ZONES
+const ALL_STORE_CODES = [];
+RAW_ZONES.forEach(z => z.stores.forEach(s => { if (!ALL_STORE_CODES.includes(s)) ALL_STORE_CODES.push(s); }));
+ALL_STORE_CODES.sort((a,b) => {
+  const na = parseInt(a.replace('ST',''),10), nb = parseInt(b.replace('ST',''),10);
+  return na - nb;
+});
+
+// Universal sort key for staff positions: RSOA → SOA 1-17 → Inven 1-15
+function getPositionSortKey(position) {
+  const pos = position.trim();
+  if (pos.startsWith('RSOA')) return 0 * 100 + (parseInt(pos.replace(/\D+/g,''),10) || 0);
+  if (pos.startsWith('SOA'))  return 1 * 100 + (parseInt(pos.replace(/\D+/g,''),10) || 0);
+  if (pos.startsWith('Inven'))return 2 * 100 + (parseInt(pos.replace(/\D+/g,''),10) || 0);
+  return 9 * 100;
+}
+function sortStaffByPosition(a, b) {
+  return getPositionSortKey(a.position) - getPositionSortKey(b.position);
+}
+
+// Inspection assignments: staffName -> [storeCodes]
+// Initialize from RAW_ZONES SOA inspectors
+let inspectionAssignments = {};
+function initAssignmentsFromZones() {
+  inspectionAssignments = {};
+  STAFF_LIST.forEach(s => { inspectionAssignments[s.name] = []; });
+  // Map current RAW_ZONES inspectors to their stores
+  RAW_ZONES.forEach(z => {
+    // Match inspector name (strip "คุณ " prefix)
+    const inspName = z.inspector.replace(/^คุณ\s*/, '');
+    const staffMatch = STAFF_LIST.find(s => s.name === inspName);
+    if (staffMatch) {
+      inspectionAssignments[staffMatch.name] = [...z.stores];
+    }
+  });
+  // Load saved assignments from localStorage
+  try {
+    const saved = localStorage.getItem('inspectionAssignments');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Validate: only keep valid staff names and store codes
+      Object.keys(parsed).forEach(name => {
+        if (inspectionAssignments.hasOwnProperty(name) && Array.isArray(parsed[name])) {
+          inspectionAssignments[name] = parsed[name].filter(s => ALL_STORE_CODES.includes(s));
+        }
+      });
+    }
+  } catch(e) {}
+}
+initAssignmentsFromZones();
+
+function saveAssignmentsToStorage() {
+  try { localStorage.setItem('inspectionAssignments', JSON.stringify(inspectionAssignments)); } catch(e) {}
+}
+
+function getAssignedStores() {
+  const set = new Set();
+  Object.values(inspectionAssignments).forEach(arr => arr.forEach(s => set.add(s)));
+  return set;
+}
+
+function getUnassignedStores() {
+  const assigned = getAssignedStores();
+  return ALL_STORE_CODES.filter(s => !assigned.has(s));
+}
+
+function getStoreAssignee(code) {
+  for (const [name, stores] of Object.entries(inspectionAssignments)) {
+    if (stores.includes(code)) return name;
+  }
+  return null;
+}
 
 // ════════════════════════════════════════════════
 //  FIREBASE STATE
@@ -1032,6 +1237,7 @@ function renderAll() {
   if (!currentRole) return;
   renderKPI(); renderRegionals(); renderBarChart(); renderStores(); renderZoneTable();
   if (currentPage==='area') renderAreaManager();
+  if (currentPage==='settings') renderSettings();
 }
 
 function renderKPI() {
@@ -1075,27 +1281,51 @@ function renderRegionals() {
 }
 
 function renderBarChart() {
-  const zones = getFilteredZones();
   const badge = document.getElementById('zoneChartCount');
-  if (badge) badge.textContent = zones.length + ' zones';
-  document.getElementById('barChart').innerHTML = zones.map(z=>{
-    let c=0,ip=0,nc=0;
-    z.stores.forEach(s=>{const st=storeState[s]?.status||'pending';if(st==='complete')c++;else if(st==='inprogress')ip++;else nc++;});
-    const t=z.stores.length,cp=t?c/t*100:0,ipp=t?ip/t*100:0,ncp=t?nc/t*100:0;
-    const pct=t?Math.round(c/t*100):0;
+
+  // Build person-based data from assignments
+  let people = STAFF_LIST.map(staff => {
+    const stores = inspectionAssignments[staff.name] || [];
+    let c=0, ip=0, nc=0;
+    stores.forEach(s => {
+      const st = storeState[s]?.status || 'pending';
+      if (st==='complete') c++; else if (st==='inprogress') ip++; else nc++;
+    });
+    return { ...staff, total: stores.length, complete: c, inprogress: ip, pending: nc };
+  });
+
+  // Apply regional filter
+  if (currentFilter !== 'all') {
+    people = people.filter(p => p.regional === currentFilter);
+  }
+
+  // Only show people with assignments, sort by RSOA → SOA1-17 → Inven1-15
+  people = people.filter(p => p.total > 0);
+  people.sort(sortStaffByPosition);
+
+  if (badge) badge.textContent = people.length + ' คน';
+
+  document.getElementById('barChart').innerHTML = people.map(p => {
+    const t = p.total, cp = t?p.complete/t*100:0, ipp = t?p.inprogress/t*100:0, ncp = t?p.pending/t*100:0;
+    const pct = t ? Math.round(p.complete / t * 100) : 0;
+    const posBg = p.posGroup === 'rsoa' ? '#fef3c7' : p.posGroup === 'soa' ? '#e0f2fe' : '#ede9fe';
+    const posColor = p.posGroup === 'rsoa' ? '#92400e' : p.posGroup === 'soa' ? '#0369a1' : '#6d28d9';
     return `<div class="bar-row" style="align-items:center">
-      <div class="bar-label" style="width:58px;font-size:11px">${z.zone}</div>
+      <div style="width:140px;flex-shrink:0;display:flex;align-items:center;gap:5px;overflow:hidden">
+        <span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${posBg};color:${posColor};font-weight:700;white-space:nowrap;flex-shrink:0;min-width:42px;text-align:center">${p.position}</span>
+        <span style="font-size:11px;font-weight:600;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p.name}">${p.nickname}</span>
+      </div>
       <div class="bar-track" style="height:20px">
-        <div class="bar-seg c" style="width:${cp}%;min-width:${c>0?'18px':'0'}">${c>0?c:''}</div>
-        <div class="bar-seg ip" style="width:${ipp}%;min-width:${ip>0?'18px':'0'}">${ip>0?ip:''}</div>
-        <div class="bar-seg nc" style="width:${ncp}%;min-width:${nc>0?'18px':'0'}">${nc>0?nc:''}</div>
+        <div class="bar-seg c" style="width:${cp}%;min-width:${p.complete>0?'18px':'0'}">${p.complete>0?p.complete:''}</div>
+        <div class="bar-seg ip" style="width:${ipp}%;min-width:${p.inprogress>0?'18px':'0'}">${p.inprogress>0?p.inprogress:''}</div>
+        <div class="bar-seg nc" style="width:${ncp}%;min-width:${p.pending>0?'18px':'0'}">${p.pending>0?p.pending:''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
         <div class="bar-total" style="width:32px">${t}st</div>
         <div style="font-size:10px;color:var(--accent-dark);font-family:'IBM Plex Mono',monospace;font-weight:700;width:34px;text-align:right">${pct}%</div>
       </div>
     </div>`;
-  }).join('');
+  }).join('') || '<div style="font-size:12px;color:var(--text-dim);padding:12px">ยังไม่มีผู้ตรวจที่ได้รับมอบหมาย</div>';
 }
 
 function setStoreFilter(val,btn) {
@@ -1112,49 +1342,129 @@ function renderStores() {
     const st=storeState[s]?.status||'pending';
     if(currentStoreFilter!=='all'&&st!==currentStoreFilter) return;
     if(search&&!s.toLowerCase().includes(search)) return;
-    entries.push({code:s,status:st,zone:z.zone,regional:z.regional});
+    const assignee = getStoreAssignee(s);
+    const assigneeNick = assignee ? (STAFF_LIST.find(sf=>sf.name===assignee)?.nickname||'') : '';
+    entries.push({code:s,status:st,zone:z.zone,regional:z.regional,assignee,assigneeNick});
   }));
   document.getElementById('storesGrid').innerHTML = entries.map(e=>
     `<div class="store-tile ${e.status}" onclick="openModal('${e.code}')">
       <div class="store-code">${e.code}</div>
       <div class="store-status-icon">${icon[e.status]}</div>
       <div class="store-regional">${e.zone}</div>
+      ${e.assigneeNick ? `<div style="font-size:8px;color:var(--accent-dark);margin-top:2px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.assigneeNick}</div>` : ''}
     </div>`
   ).join('')||`<div style="color:var(--text-dim);font-size:13px;padding:20px;grid-column:1/-1">ไม่พบสาขา</div>`;
 }
 
+let inspPosFilter = 'all';
+function setInspPosFilter(val, btn) {
+  inspPosFilter = val;
+  document.querySelectorAll('.st-pos-flt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderZoneTable();
+}
+
 function renderZoneTable() {
-  const zones=getFilteredZones();
-  document.getElementById('zoneCount').textContent = zones.length+' zones';
-  document.getElementById('zoneTableBody').innerHTML = zones.map(z=>{
-    let c=0,ip=0,nc=0;
-    z.stores.forEach(s=>{const st=storeState[s]?.status||'pending';if(st==='complete')c++;else if(st==='inprogress')ip++;else nc++;});
-    const t=z.stores.length,pct=t?Math.round(c/t*100):0;
-    const pill=nc===0&&ip===0?`<span class="status-pill sp-complete"><span class="sp-dot"></span>Complete</span>`:
-      ip>0?`<span class="status-pill sp-inprogress"><span class="sp-dot"></span>In Progress</span>`:
-      `<span class="status-pill sp-pending"><span class="sp-dot"></span>Not Started</span>`;
-    const storeChips = z.stores.map(s=>{
-      const st=storeState[s]?.status||'pending';
-      const cfg={
-        complete:{bg:'#d1fae5',color:'#059669',border:'#6ee7b7',icon:'✅'},
-        inprogress:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d',icon:'🔄'},
-        pending:{bg:'#f1f5f9',color:'#64748b',border:'#cbd5e1',icon:'⏸'}
+  const search = (document.getElementById('inspectorSearch')?.value || '').toLowerCase();
+
+  // Build person list from STAFF_LIST with their assigned stores
+  let people = STAFF_LIST.map(staff => {
+    const stores = inspectionAssignments[staff.name] || [];
+    let c=0, ip=0, nc=0;
+    stores.forEach(s => {
+      const st = storeState[s]?.status || 'pending';
+      if (st==='complete') c++; else if (st==='inprogress') ip++; else nc++;
+    });
+    return { ...staff, stores, total: stores.length, complete: c, inprogress: ip, pending: nc };
+  });
+
+  // Apply regional filter (main filter bar)
+  if (currentFilter !== 'all') {
+    people = people.filter(p => p.regional === currentFilter);
+  }
+  // Apply position filter
+  if (inspPosFilter !== 'all') {
+    people = people.filter(p => p.posGroup === inspPosFilter);
+  }
+  // Apply search
+  if (search) {
+    people = people.filter(p =>
+      p.name.toLowerCase().includes(search) ||
+      p.nickname.toLowerCase().includes(search) ||
+      p.position.toLowerCase().includes(search)
+    );
+  }
+  // Sort: RSOA → SOA 1-17 → Inven 1-15
+  people.sort(sortStaffByPosition);
+
+  document.getElementById('zoneCount').textContent = people.length + ' คน';
+
+  document.getElementById('zoneTableBody').innerHTML = people.map(p => {
+    const pct = p.total ? Math.round(p.complete / p.total * 100) : 0;
+    const pill = p.total === 0
+      ? `<span class="status-pill sp-pending"><span class="sp-dot"></span>ว่าง</span>`
+      : p.pending === 0 && p.inprogress === 0
+        ? `<span class="status-pill sp-complete"><span class="sp-dot"></span>Complete</span>`
+        : p.inprogress > 0 || p.complete > 0
+          ? `<span class="status-pill sp-inprogress"><span class="sp-dot"></span>In Progress</span>`
+          : `<span class="status-pill sp-pending"><span class="sp-dot"></span>Not Started</span>`;
+
+    // Position badge styling
+    const posCls = p.posGroup === 'rsoa' ? 'background:#fef3c7;color:#92400e;border:1px solid #fcd34d'
+      : p.posGroup === 'soa' ? 'background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd'
+      : 'background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd';
+
+    // Sort stores numerically
+    const sortedStores = [...p.stores].sort((a,b) => {
+      const na = parseInt(a.replace('ST',''),10), nb = parseInt(b.replace('ST',''),10);
+      return na - nb;
+    });
+
+    const storeChips = sortedStores.map(s => {
+      const st = storeState[s]?.status || 'pending';
+      const cfg = {
+        complete:{bg:'#d1fae5',color:'#059669',border:'#6ee7b7'},
+        inprogress:{bg:'#fef3c7',color:'#92400e',border:'#fcd34d'},
+        pending:{bg:'#f1f5f9',color:'#64748b',border:'#cbd5e1'}
       }[st];
-      return `<span style="display:inline-flex;align-items:center;gap:2px;background:${cfg.bg};color:${cfg.color};border:1px solid ${cfg.border};border-radius:4px;padding:1px 6px;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;white-space:nowrap;margin:1px">${s}</span>`;
+      const zoneName = STORE_LOC_NAMES[s]?.zone || '';
+      return `<span title="${s} · ${getStoreName(s)} · ${zoneName}" style="display:inline-flex;align-items:center;gap:2px;background:${cfg.bg};color:${cfg.color};border:1px solid ${cfg.border};border-radius:4px;padding:1px 6px;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;white-space:nowrap;margin:1px;cursor:default">${s}</span>`;
     }).join('');
+
+    const emptyMsg = p.total === 0 ? '<span style="font-size:11px;color:var(--text-dim);font-style:italic">— ยังไม่ได้มอบหมาย —</span>' : '';
+
     return `<tr>
-      <td><span style="font-size:11px;color:var(--accent-dark);font-family:'IBM Plex Mono',monospace;font-weight:700">${z.regional}</span></td>
-      <td class="td-zone">${z.zone}</td><td class="td-name">${z.inspector}</td>
-      <td style="min-width:260px"><div style="display:flex;flex-wrap:wrap;gap:1px;padding:2px 0">${storeChips}</div></td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-weight:700">${t}</td>
-      <td style="color:#059669;font-family:'IBM Plex Mono',monospace;font-weight:700">${c}</td>
-      <td style="color:#d97706;font-family:'IBM Plex Mono',monospace">${ip}</td>
-      <td style="color:#64748b;font-family:'IBM Plex Mono',monospace">${nc}</td>
-      <td><div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
-        <div style="font-size:10px;color:var(--text-dim);margin-top:2px;font-family:'IBM Plex Mono',monospace">${pct}%</div></td>
+      <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;${posCls};white-space:nowrap">${p.position}</span></td>
+      <td>
+        <div style="font-weight:700;color:var(--text);font-size:13px">${p.name}</div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:1px">(${p.nickname})</div>
+      </td>
+      <td><span style="font-size:11px;color:var(--accent-dark);font-family:'IBM Plex Mono',monospace;font-weight:700">${p.regional.replace('Regional ','R')}</span></td>
+      <td style="min-width:260px"><div style="display:flex;flex-wrap:wrap;gap:1px;padding:2px 0">${storeChips || emptyMsg}</div></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-weight:700">${p.total}</td>
+      <td style="color:#059669;font-family:'IBM Plex Mono',monospace;font-weight:700">${p.complete}</td>
+      <td style="color:#d97706;font-family:'IBM Plex Mono',monospace">${p.inprogress}</td>
+      <td style="color:#64748b;font-family:'IBM Plex Mono',monospace">${p.pending}</td>
+      <td><div class="mini-bar" style="min-width:${p.total > 0 ? '70px' : '40px'}"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:2px;font-family:'IBM Plex Mono',monospace">${p.total > 0 ? pct+'%' : '—'}</div></td>
       <td>${pill}</td>
     </tr>`;
   }).join('');
+}
+
+// Helper: get inspectors assigned to stores in a given list
+function getZoneInspectors(storeCodes) {
+  const map = {};
+  storeCodes.forEach(code => {
+    const assignee = getStoreAssignee(code);
+    if (assignee) {
+      if (!map[assignee]) map[assignee] = 0;
+      map[assignee]++;
+    }
+  });
+  return Object.entries(map)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
 }
 
 // ════════════════════════════════════════════════
@@ -1445,14 +1755,29 @@ function renderAmDetail(amName) {
     complete: 'sp-complete', inprogress: 'sp-inprogress', pending: 'sp-pending'
   };
 
+  // Update the table header to include inspector column
+  const thead = document.querySelector('#amDetailPanel .am-branch-table thead tr');
+  if (thead && !thead.querySelector('.th-inspector')) {
+    const th = document.createElement('th');
+    th.className = 'th-inspector';
+    th.textContent = 'ผู้ตรวจ';
+    thead.insertBefore(th, thead.children[4]);
+  }
+
   document.getElementById('amDetailTable').innerHTML = stores.map(code => {
     const st = storeState[code]?.status || 'pending';
     const info = STORE_LOC_NAMES[code] || {};
+    const assignee = getStoreAssignee(code);
+    const assigneeStaff = assignee ? STAFF_LIST.find(sf=>sf.name===assignee) : null;
+    const inspectorCell = assigneeStaff
+      ? `<span style="font-size:11px;color:var(--text)">${assigneeStaff.nickname}</span>`
+      : `<span style="font-size:10px;color:var(--text-dim)">—</span>`;
     return `<tr>
       <td style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent-dark)">${code}</td>
       <td style="font-size:12px;color:var(--text-muted)">${getStoreName(code)}</td>
       <td style="font-size:11px;color:var(--accent-dark);font-family:'IBM Plex Mono',monospace;font-weight:600">${info.zone||'-'}</td>
       <td style="font-size:11px;color:var(--text-muted)">${info.regional||'-'}</td>
+      <td>${inspectorCell}</td>
       <td><span class="status-pill ${statusPill[st]}"><span class="sp-dot"></span>${statusLabel[st]}</span></td>
     </tr>`;
   }).join('');
@@ -1531,203 +1856,406 @@ const AM_STORE_NAMES = {
 
 
 // ════════════════════════════════════════════════
-//  SETTINGS — Zone/Inspector Editor
+//  SETTINGS — Staff Inspection Assignment System
 // ════════════════════════════════════════════════
-// Working copy of zones (editable); starts as deep clone of RAW_ZONES
-let settingsZones = RAW_ZONES.map(z => ({ ...z }));
-// Track which rows have been edited (index into settingsZones)
-const settingsChanged = new Set();
-
-const REGIONAL_LIST = ['Regional 1', 'Regional 2', 'Regional 3', 'Regional 4'];
 const REGIONAL_CLASS = {
   'Regional 1': 'st-r1', 'Regional 2': 'st-r2',
   'Regional 3': 'st-r3', 'Regional 4': 'st-r4'
 };
 
+let stPosFilter = 'all';
+let stRegFilter = 'all';
+let selectedStaff = null;
+let stHasChanges = false;
+// snapshot for reset
+let assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
+
+function setStPosFilter(val, btn) {
+  stPosFilter = val;
+  document.querySelectorAll('.st-pos-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStaffCards();
+}
+
+function setStRegFilter(val, btn) {
+  stRegFilter = val;
+  document.querySelectorAll('.st-reg-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStaffCards();
+}
+
 function renderSettings() {
   const el = document.getElementById('settingsContent');
   if (!el) return;
-  const changedCount = settingsChanged.size;
+
+  const assigned = getAssignedStores();
+  const unassigned = getUnassignedStores();
+  const staffWithStores = STAFF_LIST.filter(s => (inspectionAssignments[s.name] || []).length > 0).length;
 
   el.innerHTML = `
     <div class="settings-section">
-      <div class="settings-section-title">⚙️ ตั้งค่าข้อมูล Zone และผู้ตรวจสาขา</div>
-      <div class="settings-section-desc">แก้ไขชื่อผู้ตรวจ (Inspector) และ Regional ของแต่ละ Zone ได้โดยตรง · เฉพาะ Admin เท่านั้น</div>
+      <div class="settings-section-title">👥 มอบหมายงานตรวจสาขา</div>
+      <div class="settings-section-desc">
+        เลือกพนักงานแล้วกำหนดสาขาที่ต้องตรวจ · ไม่จำกัด Regional · คลิกที่การ์ดเพื่อจัดการสาขา
+      </div>
 
-      <div class="settings-info-box">
-        <div class="settings-info-icon">ℹ️</div>
-        <div class="settings-info-text">
-          แก้ไขข้อมูลในตารางด้านล่าง จากนั้นกด <strong>✅ บันทึกการเปลี่ยนแปลง</strong> เพื่อให้มีผลทันที<br>
-          ข้อมูลที่แก้ไขจะมีผลกับ Dashboard, Zone Detail, Area Manager ทุกส่วน
-          ${changedCount > 0 ? `<br><span style="color:#d97706;font-weight:700">⚠️ มีการแก้ไข ${changedCount} Zone ที่ยังไม่ได้บันทึก</span>` : ''}
+      <div class="st-kpi-grid">
+        <div class="st-kpi" style="background:#f0f9ff;border-color:#bae6fd">
+          <div class="st-kpi-val" style="color:var(--accent-dark)">${STAFF_LIST.length}</div>
+          <div class="st-kpi-label">พนักงานทั้งหมด</div>
+        </div>
+        <div class="st-kpi" style="background:#f0fdf4;border-color:#6ee7b7">
+          <div class="st-kpi-val" style="color:#059669">${staffWithStores}</div>
+          <div class="st-kpi-label">มีสาขามอบหมาย</div>
+        </div>
+        <div class="st-kpi" style="background:#f0fdf4;border-color:#6ee7b7">
+          <div class="st-kpi-val" style="color:#059669">${assigned.size}</div>
+          <div class="st-kpi-label">สาขาที่มอบหมายแล้ว</div>
+        </div>
+        <div class="st-kpi" style="background:${unassigned.length > 0 ? '#fef2f2' : '#f0fdf4'};border-color:${unassigned.length > 0 ? '#fecaca' : '#6ee7b7'}">
+          <div class="st-kpi-val" style="color:${unassigned.length > 0 ? '#dc2626' : '#059669'}">${unassigned.length}</div>
+          <div class="st-kpi-label">ยังไม่ได้มอบหมาย</div>
         </div>
       </div>
 
-      <div class="table-scroll">
-        <table class="settings-table">
-          <thead><tr>
-            <th style="width:80px">Zone</th>
-            <th style="width:130px">Regional</th>
-            <th>ชื่อผู้ตรวจ (Inspector)</th>
-            <th style="width:80px">สาขา</th>
-            <th style="width:90px">จัดการ</th>
-          </tr></thead>
-          <tbody id="settingsTableBody"></tbody>
-        </table>
+      <div class="st-quick-actions">
+        <button class="st-qbtn" onclick="autoDistribute()">🎲 แจกงานอัตโนมัติ</button>
+        <button class="st-qbtn danger" onclick="clearAllAssignments()">🗑️ ล้างทั้งหมด</button>
+        <button class="st-qbtn" onclick="distributeUnassigned()">📦 แจกเฉพาะที่ยังว่าง</button>
       </div>
 
-      <div class="settings-footer-bar">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          ${changedCount > 0
-            ? `<span class="change-badge">✏️ แก้ไข ${changedCount} รายการ</span>`
-            : `<span style="font-size:12px;color:var(--text-dim)">ยังไม่มีการแก้ไข</span>`
+      <div class="st-filter-bar">
+        <span style="font-size:12px;color:var(--text-muted);font-weight:600;margin-right:4px">🔍</span>
+        <input type="text" class="st-search" id="stStaffSearch" placeholder="ค้นหาชื่อ / ชื่อเล่น..." oninput="renderStaffCards()">
+        <div class="filter-divider"></div>
+        <button class="st-fbtn st-pos-filter active" onclick="setStPosFilter('all',this)">ทั้งหมด</button>
+        <button class="st-fbtn st-pos-filter" onclick="setStPosFilter('rsoa',this)">RSOA</button>
+        <button class="st-fbtn st-pos-filter" onclick="setStPosFilter('soa',this)">SOA</button>
+        <button class="st-fbtn st-pos-filter" onclick="setStPosFilter('inven',this)">Inven</button>
+        <div class="filter-divider"></div>
+        <button class="st-fbtn st-reg-filter active" onclick="setStRegFilter('all',this)">ทุก Reg</button>
+        <button class="st-fbtn st-reg-filter" onclick="setStRegFilter('Regional 1',this)">R1</button>
+        <button class="st-fbtn st-reg-filter" onclick="setStRegFilter('Regional 2',this)">R2</button>
+        <button class="st-fbtn st-reg-filter" onclick="setStRegFilter('Regional 3',this)">R3</button>
+        <button class="st-fbtn st-reg-filter" onclick="setStRegFilter('Regional 4',this)">R4</button>
+      </div>
+
+      <div id="stAssignPanel"></div>
+      <div class="st-cards-grid" id="stCardsGrid"></div>
+      <div id="stUnassignedPanel"></div>
+
+      <div class="settings-footer-bar" id="stFooter">
+        <div>
+          ${stHasChanges
+            ? '<span class="change-badge">✏️ มีการเปลี่ยนแปลง</span>'
+            : '<span style="font-size:12px;color:var(--text-dim)">ยังไม่มีการแก้ไข</span>'
           }
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="st-reset-btn" onclick="resetSettingsChanges()">↩️ รีเซ็ต</button>
-          <button class="st-apply-btn" onclick="applySettingsChanges()" ${changedCount === 0 ? 'disabled' : ''}>
-            ✅ บันทึกการเปลี่ยนแปลง ${changedCount > 0 ? `(${changedCount})` : ''}
+          <button class="st-reset-btn" onclick="resetAssignments()">↩️ รีเซ็ต</button>
+          <button class="st-apply-btn" onclick="applyAssignments()" ${!stHasChanges ? 'disabled' : ''}>
+            ✅ บันทึกการเปลี่ยนแปลง
           </button>
         </div>
       </div>
     </div>
   `;
 
-  renderSettingsTable();
+  renderStaffCards();
+  renderUnassignedPanel();
+  if (selectedStaff) renderAssignPanel(selectedStaff);
 }
 
-function renderSettingsTable() {
-  const tbody = document.getElementById('settingsTableBody');
-  if (!tbody) return;
+function renderStaffCards() {
+  const grid = document.getElementById('stCardsGrid');
+  if (!grid) return;
+  const search = (document.getElementById('stStaffSearch')?.value || '').toLowerCase();
 
-  tbody.innerHTML = settingsZones.map((z, idx) => {
-    const isChanged = settingsChanged.has(idx);
-    const regClass = REGIONAL_CLASS[z.regional] || '';
-    return `<tr class="${isChanged ? 'changed-row' : ''}" id="srow-${idx}">
-      <td><span class="st-zone">${z.zone}</span></td>
-      <td>
-        <select class="settings-select" id="sreg-${idx}" onchange="onSettingsRegionalChange(${idx})">
-          ${REGIONAL_LIST.map(r =>
-            `<option value="${r}" ${z.regional === r ? 'selected' : ''}>${r}</option>`
-          ).join('')}
-        </select>
-      </td>
-      <td>
-        <div class="settings-edit-row">
-          <input type="text" class="settings-input" id="sinsp-${idx}"
-            value="${z.inspector}"
-            placeholder="ชื่อผู้ตรวจ..."
-            oninput="onSettingsInspectorChange(${idx})">
+  let list = STAFF_LIST.filter(s => {
+    if (stPosFilter !== 'all' && s.posGroup !== stPosFilter) return false;
+    if (stRegFilter !== 'all' && s.regional !== stRegFilter) return false;
+    if (search && !s.name.toLowerCase().includes(search) && !s.nickname.toLowerCase().includes(search) && !s.position.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  // Sort: RSOA → SOA 1-17 → Inven 1-15
+  list.sort(sortStaffByPosition);
+
+  const maxStores = Math.max(...STAFF_LIST.map(s => (inspectionAssignments[s.name]||[]).length), 1);
+
+  grid.innerHTML = list.map(s => {
+    const stores = inspectionAssignments[s.name] || [];
+    const cnt = stores.length;
+    const pct = maxStores ? Math.round(cnt / maxStores * 100) : 0;
+    const isSelected = selectedStaff === s.name;
+    const initial = s.nickname.charAt(0);
+    const regLabel = s.regional.replace('Regional ','R');
+
+    return `<div class="st-card${isSelected ? ' selected' : ''}" onclick="toggleStaffSelect('${s.name.replace(/'/g,"\\'")}')">
+      <div class="st-card-top">
+        <div class="st-card-avatar ${s.posGroup}">${initial}</div>
+        <div class="st-card-info">
+          <div class="st-card-name">${s.name}</div>
+          <div class="st-card-meta">
+            <span class="st-card-pos ${s.posGroup}">${s.position}</span>
+            <span class="st-card-nick">(${s.nickname})</span>
+            <span class="st-card-reg">${regLabel}</span>
+          </div>
         </div>
-      </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent-dark);font-size:12px">
-        ${z.stores.length} สาขา
-      </td>
-      <td>
-        ${isChanged
-          ? `<span style="font-size:11px;color:#d97706;font-weight:700">✏️ แก้ไขแล้ว</span>`
-          : `<span style="font-size:11px;color:var(--text-dim)">—</span>`
-        }
-      </td>
-    </tr>`;
-  }).join('');
+        <div class="st-card-count ${cnt === 0 ? 'zero' : ''}">${cnt} <span style="font-size:10px;font-weight:400">สาขา</span></div>
+      </div>
+      <div class="st-card-bar"><div class="st-card-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('') || '<div style="color:var(--text-dim);font-size:13px;padding:20px;grid-column:1/-1">ไม่พบพนักงาน</div>';
 }
 
-function onSettingsInspectorChange(idx) {
-  const input = document.getElementById(`sinsp-${idx}`);
-  if (!input) return;
-  const newVal = input.value.trim();
-  if (newVal !== RAW_ZONES[idx].inspector || settingsZones[idx].regional !== RAW_ZONES[idx].regional) {
-    settingsZones[idx].inspector = input.value; // keep raw input while typing
-    settingsChanged.add(idx);
+function toggleStaffSelect(name) {
+  if (selectedStaff === name) {
+    selectedStaff = null;
+    document.getElementById('stAssignPanel').innerHTML = '';
   } else {
-    settingsZones[idx].inspector = newVal;
-    settingsChanged.delete(idx);
+    selectedStaff = name;
+    renderAssignPanel(name);
   }
-  // Update changed indicator on the row
-  const row = document.getElementById(`srow-${idx}`);
-  if (row) {
-    row.className = settingsChanged.has(idx) ? 'changed-row' : '';
-    const cell = row.cells[4];
-    if (cell) {
-      cell.innerHTML = settingsChanged.has(idx)
-        ? `<span style="font-size:11px;color:#d97706;font-weight:700">✏️ แก้ไขแล้ว</span>`
-        : `<span style="font-size:11px;color:var(--text-dim)">—</span>`;
-    }
-  }
-  // Update footer badge counts without full re-render
-  updateSettingsFooter();
+  renderStaffCards();
 }
 
-function onSettingsRegionalChange(idx) {
-  const sel = document.getElementById(`sreg-${idx}`);
-  if (!sel) return;
-  settingsZones[idx].regional = sel.value;
-  if (settingsZones[idx].regional !== RAW_ZONES[idx].regional ||
-      settingsZones[idx].inspector !== RAW_ZONES[idx].inspector) {
-    settingsChanged.add(idx);
-  } else {
-    settingsChanged.delete(idx);
-  }
-  const row = document.getElementById(`srow-${idx}`);
-  if (row) {
-    row.className = settingsChanged.has(idx) ? 'changed-row' : '';
-    const cell = row.cells[4];
-    if (cell) {
-      cell.innerHTML = settingsChanged.has(idx)
-        ? `<span style="font-size:11px;color:#d97706;font-weight:700">✏️ แก้ไขแล้ว</span>`
-        : `<span style="font-size:11px;color:var(--text-dim)">—</span>`;
-    }
-  }
-  updateSettingsFooter();
+function renderAssignPanel(name) {
+  const panel = document.getElementById('stAssignPanel');
+  if (!panel) return;
+  const staff = STAFF_LIST.find(s => s.name === name);
+  if (!staff) { panel.innerHTML = ''; return; }
+
+  const stores = inspectionAssignments[name] || [];
+  const assigned = getAssignedStores();
+
+  // Sort current stores
+  const sortedStores = [...stores].sort((a,b) => {
+    const na = parseInt(a.replace('ST',''),10), nb = parseInt(b.replace('ST',''),10);
+    return na - nb;
+  });
+
+  panel.innerHTML = `
+    <div class="st-assign-panel">
+      <div class="st-assign-header">
+        <div class="st-assign-title">
+          <span style="font-size:18px">👤</span>
+          ${staff.name} <span style="font-size:12px;color:var(--text-dim);font-weight:400">(${staff.nickname})</span>
+          <span class="st-card-pos ${staff.posGroup}" style="font-size:10px">${staff.position}</span>
+        </div>
+        <button class="st-assign-close" onclick="toggleStaffSelect('${name.replace(/'/g,"\\'")}')">✕ ปิด</button>
+      </div>
+
+      <div class="st-chips-area">
+        <div class="st-chips-label">📋 สาขาที่มอบหมาย (${stores.length})</div>
+        <div class="st-chips-wrap" id="stAssignedChips">
+          ${sortedStores.length > 0
+            ? sortedStores.map(s =>
+                `<div class="st-chip">
+                  ${s}
+                  <button class="st-chip-x" onclick="event.stopPropagation();removeAssignment('${name.replace(/'/g,"\\'")}','${s}')" title="ลบ ${s}">✕</button>
+                </div>`
+              ).join('')
+            : '<div class="st-chips-empty">ยังไม่มีสาขามอบหมาย — เลือกจากด้านล่าง</div>'
+          }
+        </div>
+      </div>
+
+      <div class="st-picker">
+        <div class="st-picker-header">
+          <span style="font-size:12px;font-weight:700;color:var(--text)">➕ เพิ่มสาขา</span>
+          <input type="text" class="st-picker-search" id="stPickerSearch" placeholder="ค้นหา ST..." oninput="renderPickerGrid('${name.replace(/'/g,"\\'")}')">
+          <button class="st-qbtn" style="font-size:11px;padding:4px 10px" onclick="addAllUnassigned('${name.replace(/'/g,"\\'")}')">เพิ่มทั้งหมดที่ว่าง</button>
+        </div>
+        <div class="st-picker-grid" id="stPickerGrid"></div>
+      </div>
+    </div>
+  `;
+
+  renderPickerGrid(name);
 }
 
-function updateSettingsFooter() {
-  const cnt = settingsChanged.size;
-  // update badge
-  const footers = document.querySelectorAll('.settings-footer-bar');
-  footers.forEach(footer => {
+function renderPickerGrid(staffName) {
+  const grid = document.getElementById('stPickerGrid');
+  if (!grid) return;
+  const search = (document.getElementById('stPickerSearch')?.value || '').toLowerCase();
+  const myStores = new Set(inspectionAssignments[staffName] || []);
+
+  const available = ALL_STORE_CODES.filter(s => {
+    if (myStores.has(s)) return false; // already assigned to this person
+    if (search && !s.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const assignedSet = getAssignedStores();
+
+  grid.innerHTML = available.map(s => {
+    const isTaken = assignedSet.has(s) && !myStores.has(s);
+    const takenBy = isTaken ? getStoreAssignee(s) : null;
+    const takenNick = takenBy ? (STAFF_LIST.find(st => st.name === takenBy)?.nickname || '') : '';
+    return `<div class="st-pick-chip ${isTaken ? 'taken' : ''}"
+      onclick="${isTaken ? '' : `addAssignment('${staffName.replace(/'/g,"\\'")}','${s}')`}"
+      title="${isTaken ? `มอบหมายให้ ${takenBy} (${takenNick}) แล้ว` : `เพิ่ม ${s}`}">
+      ${s}${isTaken ? ` <span style="font-size:9px;font-style:italic">(${takenNick})</span>` : ''}
+    </div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--text-dim);padding:8px">ไม่มีสาขาว่าง</div>';
+}
+
+function addAssignment(staffName, storeCode) {
+  if (!inspectionAssignments[staffName]) inspectionAssignments[staffName] = [];
+  if (inspectionAssignments[staffName].includes(storeCode)) return;
+  inspectionAssignments[staffName].push(storeCode);
+  markChanged();
+  renderAssignPanel(staffName);
+  renderUnassignedPanel();
+  updateSettingsKPI();
+}
+
+function removeAssignment(staffName, storeCode) {
+  if (!inspectionAssignments[staffName]) return;
+  inspectionAssignments[staffName] = inspectionAssignments[staffName].filter(s => s !== storeCode);
+  markChanged();
+  renderAssignPanel(staffName);
+  renderStaffCards();
+  renderUnassignedPanel();
+  updateSettingsKPI();
+}
+
+function addAllUnassigned(staffName) {
+  const unassigned = getUnassignedStores();
+  if (unassigned.length === 0) { showToast('ไม่มีสาขาที่ยังว่าง'); return; }
+  if (!inspectionAssignments[staffName]) inspectionAssignments[staffName] = [];
+  inspectionAssignments[staffName] = [...new Set([...inspectionAssignments[staffName], ...unassigned])];
+  markChanged();
+  renderAssignPanel(staffName);
+  renderStaffCards();
+  renderUnassignedPanel();
+  updateSettingsKPI();
+  showToast(`➕ เพิ่ม ${unassigned.length} สาขาให้ ${STAFF_LIST.find(s=>s.name===staffName)?.nickname || staffName}`);
+}
+
+function markChanged() {
+  stHasChanges = true;
+  const footer = document.getElementById('stFooter');
+  if (footer) {
     const badgeArea = footer.querySelector('div:first-child');
-    if (badgeArea) {
-      badgeArea.innerHTML = cnt > 0
-        ? `<span class="change-badge">✏️ แก้ไข ${cnt} รายการ</span>`
-        : `<span style="font-size:12px;color:var(--text-dim)">ยังไม่มีการแก้ไข</span>`;
-    }
+    if (badgeArea) badgeArea.innerHTML = '<span class="change-badge">✏️ มีการเปลี่ยนแปลง</span>';
     const applyBtn = footer.querySelector('.st-apply-btn');
-    if (applyBtn) {
-      applyBtn.disabled = cnt === 0;
-      applyBtn.textContent = `✅ บันทึกการเปลี่ยนแปลง${cnt > 0 ? ` (${cnt})` : ''}`;
-    }
-    // update info box warning
-    const infoEl = document.querySelector('.settings-info-text');
-    if (infoEl) {
-      const warnEl = infoEl.querySelector('span');
-      if (cnt > 0) {
-        if (!warnEl) {
-          infoEl.innerHTML += `<br><span style="color:#d97706;font-weight:700">⚠️ มีการแก้ไข ${cnt} Zone ที่ยังไม่ได้บันทึก</span>`;
-        } else {
-          warnEl.textContent = `⚠️ มีการแก้ไข ${cnt} Zone ที่ยังไม่ได้บันทึก`;
-        }
-      } else if (warnEl) {
-        warnEl.remove();
-      }
-    }
-  });
+    if (applyBtn) applyBtn.disabled = false;
+  }
 }
 
-function applySettingsChanges() {
-  if (settingsChanged.size === 0) return;
+function updateSettingsKPI() {
+  const kpis = document.querySelectorAll('.st-kpi-val');
+  if (kpis.length < 4) return;
+  const assigned = getAssignedStores();
+  const unassigned = getUnassignedStores();
+  const staffWithStores = STAFF_LIST.filter(s => (inspectionAssignments[s.name] || []).length > 0).length;
+  kpis[1].textContent = staffWithStores;
+  kpis[2].textContent = assigned.size;
+  kpis[3].textContent = unassigned.length;
+  // Update unassigned styling
+  const kpiCards = document.querySelectorAll('.st-kpi');
+  if (kpiCards[3]) {
+    kpiCards[3].style.background = unassigned.length > 0 ? '#fef2f2' : '#f0fdf4';
+    kpiCards[3].style.borderColor = unassigned.length > 0 ? '#fecaca' : '#6ee7b7';
+    kpis[3].style.color = unassigned.length > 0 ? '#dc2626' : '#059669';
+  }
+}
 
-  // Flush any partially-typed inspector names
-  settingsChanged.forEach(idx => {
-    const input = document.getElementById(`sinsp-${idx}`);
-    if (input) settingsZones[idx].inspector = input.value.trim() || settingsZones[idx].inspector;
+function renderUnassignedPanel() {
+  const panel = document.getElementById('stUnassignedPanel');
+  if (!panel) return;
+  const unassigned = getUnassignedStores();
+
+  if (unassigned.length === 0) {
+    panel.innerHTML = `<div class="st-unassigned" style="border-color:#6ee7b7;background:#f0fdf4">
+      <div class="st-unassigned-title" style="color:#059669">✅ สาขาทั้งหมดถูกมอบหมายแล้ว</div>
+    </div>`;
+    return;
+  }
+
+  panel.innerHTML = `
+    <div class="st-unassigned">
+      <div class="st-unassigned-title">
+        ⚠️ สาขาที่ยังไม่ได้มอบหมาย
+        <span style="font-size:11px;font-weight:400;color:var(--text-dim);background:var(--gray-light);padding:2px 8px;border-radius:4px">${unassigned.length} สาขา</span>
+      </div>
+      <div class="st-unassigned-chips">
+        ${unassigned.map(s => `<span class="st-un-chip">${s}</span>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function autoDistribute() {
+  if (!confirm('จะแจกสาขาทั้งหมดให้พนักงานอัตโนมัติ (เฉลี่ยเท่ากัน)\nการมอบหมายเดิมจะถูกล้าง\n\nยืนยันหรือไม่?')) return;
+
+  // Clear all
+  STAFF_LIST.forEach(s => { inspectionAssignments[s.name] = []; });
+
+  // Distribute evenly round-robin
+  const stores = [...ALL_STORE_CODES];
+  stores.forEach((s, i) => {
+    const staff = STAFF_LIST[i % STAFF_LIST.length];
+    inspectionAssignments[staff.name].push(s);
   });
 
-  // Apply settingsZones → RAW_ZONES (mutate in place so all render functions pick up changes)
-  settingsZones.forEach((sz, idx) => {
-    RAW_ZONES[idx].inspector = sz.inspector;
-    RAW_ZONES[idx].regional  = sz.regional;
+  markChanged();
+  renderSettings();
+  showToast(`🎲 แจกงานอัตโนมัติแล้ว — ${ALL_STORE_CODES.length} สาขา → ${STAFF_LIST.length} คน`);
+}
+
+function distributeUnassigned() {
+  const unassigned = getUnassignedStores();
+  if (unassigned.length === 0) { showToast('ไม่มีสาขาที่ยังว่าง'); return; }
+
+  // Find staff with fewest assignments, distribute to them
+  const sorted = [...STAFF_LIST].sort((a,b) =>
+    (inspectionAssignments[a.name]||[]).length - (inspectionAssignments[b.name]||[]).length
+  );
+
+  unassigned.forEach((s, i) => {
+    // Re-sort each time to keep balanced
+    sorted.sort((a,b) =>
+      (inspectionAssignments[a.name]||[]).length - (inspectionAssignments[b.name]||[]).length
+    );
+    const target = sorted[0];
+    if (!inspectionAssignments[target.name]) inspectionAssignments[target.name] = [];
+    inspectionAssignments[target.name].push(s);
+  });
+
+  markChanged();
+  renderSettings();
+  showToast(`📦 แจก ${unassigned.length} สาขาที่ว่างให้พนักงานแล้ว (เฉลี่ย)`);
+}
+
+function clearAllAssignments() {
+  if (!confirm('ล้างการมอบหมายทั้งหมด?\nสาขาทั้งหมดจะกลับเป็น "ยังไม่ได้มอบหมาย"\n\nยืนยันหรือไม่?')) return;
+  STAFF_LIST.forEach(s => { inspectionAssignments[s.name] = []; });
+  markChanged();
+  selectedStaff = null;
+  renderSettings();
+  showToast('🗑️ ล้างการมอบหมายทั้งหมดแล้ว');
+}
+
+function applyAssignments() {
+  if (!stHasChanges) return;
+
+  // Sync assignments back to RAW_ZONES inspector names
+  // For each zone, find who has the most stores assigned in that zone
+  RAW_ZONES.forEach(z => {
+    const zoneStoreSet = new Set(z.stores);
+    let bestMatch = null, bestCount = 0;
+    Object.entries(inspectionAssignments).forEach(([name, stores]) => {
+      const overlap = stores.filter(s => zoneStoreSet.has(s)).length;
+      if (overlap > bestCount) { bestCount = overlap; bestMatch = name; }
+    });
+    if (bestMatch) {
+      z.inspector = 'คุณ ' + bestMatch;
+    } else {
+      z.inspector = '— ยังไม่มอบหมาย —';
+    }
   });
 
   // Rebuild storeState metadata (zone/regional per store)
@@ -1735,7 +2263,7 @@ function applySettingsChanges() {
     z.stores.forEach(code => {
       if (storeState[code]) {
         storeState[code].regional = z.regional;
-        storeState[code].zone     = z.zone;
+        storeState[code].zone = z.zone;
       }
     });
   });
@@ -1745,22 +2273,25 @@ function applySettingsChanges() {
     z.stores.forEach(s => { STORE_LOC_NAMES[s] = { zone: z.zone, regional: z.regional }; });
   });
 
-  const cnt = settingsChanged.size;
-  settingsChanged.clear();
+  saveAssignmentsToStorage();
+  assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
+  stHasChanges = false;
 
-  // Re-render all pages
+  // Re-render ALL pages to reflect changes
   renderAll();
+  // If on area page, also force area manager re-render
+  if (currentPage === 'area') renderAreaManager();
   renderSettings();
-  showToast(`✅ บันทึกแล้ว ${cnt} Zone — ข้อมูลอัปเดตทุกหน้าแล้ว`);
+  showToast('✅ บันทึกการมอบหมายแล้ว — ข้อมูลอัปเดตทุกหน้า');
 }
 
-function resetSettingsChanges() {
-  if (settingsChanged.size === 0) { showToast('ไม่มีการแก้ไขที่ต้องรีเซ็ต'); return; }
-  // Restore settingsZones from RAW_ZONES
-  settingsZones = RAW_ZONES.map(z => ({ ...z }));
-  settingsChanged.clear();
+function resetAssignments() {
+  if (!stHasChanges) { showToast('ไม่มีการแก้ไขที่ต้องรีเซ็ต'); return; }
+  inspectionAssignments = JSON.parse(JSON.stringify(assignmentsSnapshot));
+  stHasChanges = false;
+  selectedStaff = null;
   renderSettings();
-  showToast('↩️ รีเซ็ตแล้ว — ข้อมูลกลับสู่ค่าเดิม');
+  showToast('↩️ รีเซ็ตแล้ว — กลับสู่ค่าที่บันทึกล่าสุด');
 }
 
 init();
