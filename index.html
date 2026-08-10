@@ -968,7 +968,10 @@ async function connectFirebase() {
     updateSyncBadge('offline');
     updateDbStatusBadge('offline');
   }
+  // Load assignments from Firebase (overrides localStorage)
+  await loadAssignmentsFromFirebase();
   startSSEListener();   // always start listener, even after error (will retry)
+  startAssignmentSSE(); // SSE for assignment sync
 }
 
 /* Apply a full snapshot from Firebase (data may be null on first run) */
@@ -1117,6 +1120,167 @@ async function pushInitialData() {
       body: JSON.stringify(payload)
     });
   } catch(e) { console.warn('[Firebase] pushInitialData failed:', e.message); }
+}
+
+// ════════════════════════════════════════════════
+//  FIREBASE — Inspection Assignments Sync
+// ════════════════════════════════════════════════
+let _assignSSE = null;
+let _assignSSERetryTimer = null;
+let _assignSSERetryDelay = 3000;
+let _lastAssignPollData = null;
+let _isSavingAssignments = false; // guard to ignore own SSE echo
+
+async function loadAssignmentsFromFirebase() {
+  if (isOfflineMode || !DB_URL) return;
+  try {
+    const res = await fetch(`${DB_URL}/inspectionAssignments.json`, { cache: 'no-store' });
+    if (!res.ok) return; // not an error — node may not exist yet
+    const data = await res.json();
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      applyAssignmentSnapshot(data);
+      console.log('[Firebase] assignments loaded from cloud');
+    }
+  } catch(e) {
+    console.warn('[Firebase] loadAssignments failed:', e.message);
+    // Fall back to localStorage (already loaded in initAssignmentsFromZones)
+  }
+}
+
+function applyAssignmentSnapshot(data) {
+  if (!data || typeof data !== 'object') return;
+  // Only apply valid staff names and store codes
+  let changed = false;
+  STAFF_LIST.forEach(s => {
+    if (data[s.name] && Array.isArray(data[s.name])) {
+      const valid = data[s.name].filter(c => ALL_STORE_CODES.includes(c));
+      inspectionAssignments[s.name] = valid;
+      changed = true;
+    } else if (data[s.name] === null || (data.hasOwnProperty(s.name) && !data[s.name])) {
+      inspectionAssignments[s.name] = [];
+      changed = true;
+    }
+  });
+  if (changed) {
+    assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
+    saveAssignmentsToStorage(); // keep localStorage in sync
+    // Sync back to RAW_ZONES inspector names
+    syncAssignmentsToZones();
+  }
+}
+
+function syncAssignmentsToZones() {
+  RAW_ZONES.forEach(z => {
+    const zoneStoreSet = new Set(z.stores);
+    let bestMatch = null, bestCount = 0;
+    Object.entries(inspectionAssignments).forEach(([name, stores]) => {
+      const overlap = stores.filter(s => zoneStoreSet.has(s)).length;
+      if (overlap > bestCount) { bestCount = overlap; bestMatch = name; }
+    });
+    z.inspector = bestMatch ? 'คุณ ' + bestMatch : '— ยังไม่มอบหมาย —';
+  });
+}
+
+async function saveAssignmentsToFirebase() {
+  if (isOfflineMode || !DB_URL) return;
+  _isSavingAssignments = true;
+  updateSyncBadge('syncing');
+  try {
+    const res = await fetch(`${DB_URL}/inspectionAssignments.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(inspectionAssignments)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    _lastAssignPollData = JSON.stringify(inspectionAssignments);
+    updateSyncBadge('synced');
+    console.log('[Firebase] assignments saved to cloud');
+  } catch(e) {
+    console.warn('[Firebase] saveAssignments failed:', e.message);
+    updateSyncBadge('offline');
+    showToast('⚠️ บันทึกในเครื่องแล้ว แต่ Sync ไม่ได้ — ตรวจสอบอินเทอร์เน็ต');
+  }
+  setTimeout(() => { _isSavingAssignments = false; }, 2000); // debounce own echo
+}
+
+/* SSE listener for assignment changes from other devices */
+function startAssignmentSSE() {
+  if (isOfflineMode || !DB_URL) return;
+  if (_assignSSE) { try { _assignSSE.close(); } catch(e){} _assignSSE = null; }
+  if (_assignSSERetryTimer) { clearTimeout(_assignSSERetryTimer); _assignSSERetryTimer = null; }
+
+  let es2;
+  try {
+    es2 = new EventSource(`${DB_URL}/inspectionAssignments.json`);
+  } catch(e) {
+    console.warn('[SSE-Assign] creation failed:', e);
+    scheduleAssignSSERetry();
+    return;
+  }
+  _assignSSE = es2;
+
+  es2.addEventListener('put', (e) => {
+    if (_isSavingAssignments) return; // ignore our own echo
+    try {
+      const msg = JSON.parse(e.data);
+      const path = msg.path || '/';
+      const data = msg.data;
+      if (path === '/' || path === '') {
+        if (data && typeof data === 'object') {
+          applyAssignmentSnapshot(data);
+          if (currentRole) { renderAll(); showSyncFlash(); }
+          console.log('[SSE-Assign] full snapshot applied');
+        }
+      } else {
+        // Partial update — single staff member
+        const staffName = decodeURIComponent(path.replace(/^\//, '').split('/')[0]);
+        if (inspectionAssignments.hasOwnProperty(staffName)) {
+          if (data === null) {
+            inspectionAssignments[staffName] = [];
+          } else if (Array.isArray(data)) {
+            inspectionAssignments[staffName] = data.filter(c => ALL_STORE_CODES.includes(c));
+          }
+          assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
+          saveAssignmentsToStorage();
+          syncAssignmentsToZones();
+          if (currentRole) { renderAll(); showSyncFlash(); }
+        }
+      }
+    } catch(ex) { console.warn('[SSE-Assign] parse error:', ex); }
+  });
+
+  es2.addEventListener('patch', (e) => {
+    if (_isSavingAssignments) return;
+    try {
+      const msg = JSON.parse(e.data);
+      const data = msg.data;
+      if (data && typeof data === 'object') {
+        applyAssignmentSnapshot(data);
+        if (currentRole) { renderAll(); showSyncFlash(); }
+      }
+    } catch(ex) { console.warn('[SSE-Assign patch] error:', ex); }
+  });
+
+  es2.onopen = () => {
+    _assignSSERetryDelay = 3000;
+    console.log('[SSE-Assign] connected');
+  };
+
+  es2.onerror = () => {
+    console.warn('[SSE-Assign] error, retrying...');
+    try { es2.close(); } catch(e){}
+    _assignSSE = null;
+    scheduleAssignSSERetry();
+  };
+}
+
+function scheduleAssignSSERetry() {
+  if (_assignSSERetryTimer) return;
+  _assignSSERetryTimer = setTimeout(() => {
+    _assignSSERetryTimer = null;
+    _assignSSERetryDelay = Math.min(_assignSSERetryDelay * 2, 30000);
+    startAssignmentSSE();
+  }, _assignSSERetryDelay);
 }
 
 /* Write a single store status update */
@@ -1554,17 +1718,40 @@ let _lastPollData = null;   // JSON string snapshot for change detection
 
 async function pollFirebase() {
   if (isOfflineMode || !DB_URL) return;
+  let anyChange = false;
+
+  // Poll store statuses
   try {
     const res = await fetch(`${DB_URL}/storeStatuses.json`, { cache: 'no-store' });
-    if (!res.ok) return;
-    const data = await res.json();
-    const snap = JSON.stringify(data);
-    if (snap !== _lastPollData) {
-      _lastPollData = snap;
-      applyFirebaseSnapshot(data);
-      if (currentRole) { renderAll(); showSyncFlash(); }
+    if (res.ok) {
+      const data = await res.json();
+      const snap = JSON.stringify(data);
+      if (snap !== _lastPollData) {
+        _lastPollData = snap;
+        applyFirebaseSnapshot(data);
+        anyChange = true;
+      }
     }
-  } catch(e) { /* silent — SSE will handle reconnect */ }
+  } catch(e) { /* silent */ }
+
+  // Poll assignments (catches changes from other devices)
+  if (!_isSavingAssignments) {
+    try {
+      const res2 = await fetch(`${DB_URL}/inspectionAssignments.json`, { cache: 'no-store' });
+      if (res2.ok) {
+        const data2 = await res2.json();
+        const snap2 = JSON.stringify(data2);
+        if (snap2 !== _lastAssignPollData && data2 && typeof data2 === 'object') {
+          _lastAssignPollData = snap2;
+          applyAssignmentSnapshot(data2);
+          anyChange = true;
+          console.log('[Poll] assignment changes detected');
+        }
+      }
+    } catch(e) { /* silent */ }
+  }
+
+  if (anyChange && currentRole) { renderAll(); showSyncFlash(); }
 }
 
 function startPolling() {
@@ -1579,6 +1766,7 @@ window.addEventListener('online', () => {
   updateDbStatusBadge('connecting');
   // Reconnect SSE and do an immediate poll on coming back online
   startSSEListener();
+  startAssignmentSSE();
   pollFirebase();
 });
 
@@ -1595,6 +1783,9 @@ document.addEventListener('visibilitychange', () => {
     // Also restart SSE if it dropped
     if (!_sseInstance || _sseInstance.readyState === EventSource.CLOSED) {
       startSSEListener();
+    }
+    if (!_assignSSE || _assignSSE.readyState === EventSource.CLOSED) {
+      startAssignmentSSE();
     }
   }
 });
@@ -2243,20 +2434,7 @@ function applyAssignments() {
   if (!stHasChanges) return;
 
   // Sync assignments back to RAW_ZONES inspector names
-  // For each zone, find who has the most stores assigned in that zone
-  RAW_ZONES.forEach(z => {
-    const zoneStoreSet = new Set(z.stores);
-    let bestMatch = null, bestCount = 0;
-    Object.entries(inspectionAssignments).forEach(([name, stores]) => {
-      const overlap = stores.filter(s => zoneStoreSet.has(s)).length;
-      if (overlap > bestCount) { bestCount = overlap; bestMatch = name; }
-    });
-    if (bestMatch) {
-      z.inspector = 'คุณ ' + bestMatch;
-    } else {
-      z.inspector = '— ยังไม่มอบหมาย —';
-    }
-  });
+  syncAssignmentsToZones();
 
   // Rebuild storeState metadata (zone/regional per store)
   RAW_ZONES.forEach(z => {
@@ -2274,6 +2452,7 @@ function applyAssignments() {
   });
 
   saveAssignmentsToStorage();
+  saveAssignmentsToFirebase(); // ← Sync to Firebase for all devices
   assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
   stHasChanges = false;
 
@@ -2282,7 +2461,7 @@ function applyAssignments() {
   // If on area page, also force area manager re-render
   if (currentPage === 'area') renderAreaManager();
   renderSettings();
-  showToast('✅ บันทึกการมอบหมายแล้ว — ข้อมูลอัปเดตทุกหน้า');
+  showToast('✅ บันทึกแล้ว — กำลัง Sync ไปทุกอุปกรณ์...');
 }
 
 function resetAssignments() {
