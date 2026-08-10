@@ -857,38 +857,61 @@ function sortStaffByPosition(a, b) {
 }
 
 // Inspection assignments: staffName -> [storeCodes]
-// Initialize from RAW_ZONES SOA inspectors
+// Initialize defaults from RAW_ZONES SOA inspectors (NO localStorage here)
 let inspectionAssignments = {};
-function initAssignmentsFromZones() {
+function initAssignmentsDefaults() {
   inspectionAssignments = {};
   STAFF_LIST.forEach(s => { inspectionAssignments[s.name] = []; });
   // Map current RAW_ZONES inspectors to their stores
   RAW_ZONES.forEach(z => {
-    // Match inspector name (strip "คุณ " prefix)
     const inspName = z.inspector.replace(/^คุณ\s*/, '');
     const staffMatch = STAFF_LIST.find(s => s.name === inspName);
     if (staffMatch) {
       inspectionAssignments[staffMatch.name] = [...z.stores];
     }
   });
-  // Load saved assignments from localStorage
-  try {
-    const saved = localStorage.getItem('inspectionAssignments');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      // Validate: only keep valid staff names and store codes
-      Object.keys(parsed).forEach(name => {
-        if (inspectionAssignments.hasOwnProperty(name) && Array.isArray(parsed[name])) {
-          inspectionAssignments[name] = parsed[name].filter(s => ALL_STORE_CODES.includes(s));
-        }
-      });
-    }
-  } catch(e) {}
 }
-initAssignmentsFromZones();
+initAssignmentsDefaults();
+
+// ── Firebase uses index-based keys (staff_0, staff_1...) to avoid Thai key issues ──
+function assignmentsToFirebaseFormat() {
+  const obj = {};
+  STAFF_LIST.forEach((s, i) => {
+    obj['s' + i] = inspectionAssignments[s.name] || [];
+  });
+  return obj;
+}
+function firebaseFormatToAssignments(fbData) {
+  if (!fbData || typeof fbData !== 'object') return null;
+  const result = {};
+  STAFF_LIST.forEach((s, i) => {
+    const key = 's' + i;
+    if (fbData[key] && Array.isArray(fbData[key])) {
+      result[s.name] = fbData[key].filter(c => ALL_STORE_CODES.includes(c));
+    } else {
+      result[s.name] = [];
+    }
+  });
+  return result;
+}
 
 function saveAssignmentsToStorage() {
-  try { localStorage.setItem('inspectionAssignments', JSON.stringify(inspectionAssignments)); } catch(e) {}
+  try { localStorage.setItem('inspectionAssignments_v2', JSON.stringify(inspectionAssignments)); } catch(e) {}
+}
+function loadAssignmentsFromStorage() {
+  try {
+    const saved = localStorage.getItem('inspectionAssignments_v2');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      STAFF_LIST.forEach(s => {
+        if (parsed[s.name] && Array.isArray(parsed[s.name])) {
+          inspectionAssignments[s.name] = parsed[s.name].filter(c => ALL_STORE_CODES.includes(c));
+        }
+      });
+      return true;
+    }
+  } catch(e) {}
+  return false;
 }
 
 function getAssignedStores() {
@@ -1124,49 +1147,58 @@ async function pushInitialData() {
 
 // ════════════════════════════════════════════════
 //  FIREBASE — Inspection Assignments Sync
+//  Uses index keys (s0, s1...) to avoid Thai character key issues
+//  Firebase is SOURCE OF TRUTH → localStorage is offline fallback
 // ════════════════════════════════════════════════
 let _assignSSE = null;
 let _assignSSERetryTimer = null;
 let _assignSSERetryDelay = 3000;
 let _lastAssignPollData = null;
-let _isSavingAssignments = false; // guard to ignore own SSE echo
+let _isSavingAssignments = false;
 
 async function loadAssignmentsFromFirebase() {
-  if (isOfflineMode || !DB_URL) return;
+  if (isOfflineMode || !DB_URL) {
+    loadAssignmentsFromStorage(); // offline fallback
+    return;
+  }
   try {
-    const res = await fetch(`${DB_URL}/inspectionAssignments.json`, { cache: 'no-store' });
-    if (!res.ok) return; // not an error — node may not exist yet
+    const res = await fetch(`${DB_URL}/assignments.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    if (data && typeof data === 'object' && !Array.isArray(data)) {
-      applyAssignmentSnapshot(data);
-      console.log('[Firebase] assignments loaded from cloud');
+
+    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+      // Firebase has data → use it (SOURCE OF TRUTH)
+      const converted = firebaseFormatToAssignments(data);
+      if (converted) {
+        inspectionAssignments = converted;
+        assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
+        saveAssignmentsToStorage();
+        syncAssignmentsToZones();
+        _lastAssignPollData = JSON.stringify(data);
+        console.log('[Firebase] ✅ assignments loaded from cloud');
+        return;
+      }
     }
+
+    // Firebase is empty → push current defaults up so other devices get them
+    console.log('[Firebase] assignments empty — pushing defaults...');
+    await saveAssignmentsToFirebase();
+
   } catch(e) {
-    console.warn('[Firebase] loadAssignments failed:', e.message);
-    // Fall back to localStorage (already loaded in initAssignmentsFromZones)
+    console.warn('[Firebase] loadAssignments failed:', e.message, '— trying localStorage');
+    loadAssignmentsFromStorage();
   }
 }
 
-function applyAssignmentSnapshot(data) {
-  if (!data || typeof data !== 'object') return;
-  // Only apply valid staff names and store codes
-  let changed = false;
-  STAFF_LIST.forEach(s => {
-    if (data[s.name] && Array.isArray(data[s.name])) {
-      const valid = data[s.name].filter(c => ALL_STORE_CODES.includes(c));
-      inspectionAssignments[s.name] = valid;
-      changed = true;
-    } else if (data[s.name] === null || (data.hasOwnProperty(s.name) && !data[s.name])) {
-      inspectionAssignments[s.name] = [];
-      changed = true;
-    }
-  });
-  if (changed) {
-    assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
-    saveAssignmentsToStorage(); // keep localStorage in sync
-    // Sync back to RAW_ZONES inspector names
-    syncAssignmentsToZones();
-  }
+function applyAssignmentSnapshot(fbData) {
+  if (!fbData || typeof fbData !== 'object') return;
+  const converted = firebaseFormatToAssignments(fbData);
+  if (!converted) return;
+
+  inspectionAssignments = converted;
+  assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
+  saveAssignmentsToStorage();
+  syncAssignmentsToZones();
 }
 
 function syncAssignmentsToZones() {
@@ -1185,22 +1217,23 @@ async function saveAssignmentsToFirebase() {
   if (isOfflineMode || !DB_URL) return;
   _isSavingAssignments = true;
   updateSyncBadge('syncing');
+  const fbData = assignmentsToFirebaseFormat();
   try {
-    const res = await fetch(`${DB_URL}/inspectionAssignments.json`, {
+    const res = await fetch(`${DB_URL}/assignments.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(inspectionAssignments)
+      body: JSON.stringify(fbData)
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    _lastAssignPollData = JSON.stringify(inspectionAssignments);
+    _lastAssignPollData = JSON.stringify(fbData);
     updateSyncBadge('synced');
-    console.log('[Firebase] assignments saved to cloud');
+    console.log('[Firebase] ✅ assignments saved to cloud');
   } catch(e) {
     console.warn('[Firebase] saveAssignments failed:', e.message);
     updateSyncBadge('offline');
-    showToast('⚠️ บันทึกในเครื่องแล้ว แต่ Sync ไม่ได้ — ตรวจสอบอินเทอร์เน็ต');
+    showToast('⚠️ บันทึกในเครื่อง — Sync ไม่ได้ ตรวจสอบอินเทอร์เน็ต');
   }
-  setTimeout(() => { _isSavingAssignments = false; }, 2000); // debounce own echo
+  setTimeout(() => { _isSavingAssignments = false; }, 2000);
 }
 
 /* SSE listener for assignment changes from other devices */
@@ -1211,30 +1244,33 @@ function startAssignmentSSE() {
 
   let es2;
   try {
-    es2 = new EventSource(`${DB_URL}/inspectionAssignments.json`);
+    es2 = new EventSource(`${DB_URL}/assignments.json`);
   } catch(e) {
-    console.warn('[SSE-Assign] creation failed:', e);
     scheduleAssignSSERetry();
     return;
   }
   _assignSSE = es2;
 
   es2.addEventListener('put', (e) => {
-    if (_isSavingAssignments) return; // ignore our own echo
+    if (_isSavingAssignments) return;
     try {
       const msg = JSON.parse(e.data);
       const path = msg.path || '/';
       const data = msg.data;
+
       if (path === '/' || path === '') {
+        // Full snapshot
         if (data && typeof data === 'object') {
           applyAssignmentSnapshot(data);
           if (currentRole) { renderAll(); showSyncFlash(); }
-          console.log('[SSE-Assign] full snapshot applied');
+          console.log('[SSE-Assign] ✅ full snapshot from other device');
         }
       } else {
-        // Partial update — single staff member
-        const staffName = decodeURIComponent(path.replace(/^\//, '').split('/')[0]);
-        if (inspectionAssignments.hasOwnProperty(staffName)) {
+        // Partial: single staff index like "/s0"
+        const key = path.replace(/^\//, '').split('/')[0]; // "s0", "s1" etc
+        const idx = parseInt(key.replace('s',''), 10);
+        if (!isNaN(idx) && idx >= 0 && idx < STAFF_LIST.length) {
+          const staffName = STAFF_LIST[idx].name;
           if (data === null) {
             inspectionAssignments[staffName] = [];
           } else if (Array.isArray(data)) {
@@ -1244,6 +1280,7 @@ function startAssignmentSSE() {
           saveAssignmentsToStorage();
           syncAssignmentsToZones();
           if (currentRole) { renderAll(); showSyncFlash(); }
+          console.log('[SSE-Assign] partial update:', staffName);
         }
       }
     } catch(ex) { console.warn('[SSE-Assign] parse error:', ex); }
@@ -1253,21 +1290,15 @@ function startAssignmentSSE() {
     if (_isSavingAssignments) return;
     try {
       const msg = JSON.parse(e.data);
-      const data = msg.data;
-      if (data && typeof data === 'object') {
-        applyAssignmentSnapshot(data);
+      if (msg.data && typeof msg.data === 'object') {
+        applyAssignmentSnapshot(msg.data);
         if (currentRole) { renderAll(); showSyncFlash(); }
       }
-    } catch(ex) { console.warn('[SSE-Assign patch] error:', ex); }
+    } catch(ex) {}
   });
 
-  es2.onopen = () => {
-    _assignSSERetryDelay = 3000;
-    console.log('[SSE-Assign] connected');
-  };
-
+  es2.onopen = () => { _assignSSERetryDelay = 3000; console.log('[SSE-Assign] connected'); };
   es2.onerror = () => {
-    console.warn('[SSE-Assign] error, retrying...');
     try { es2.close(); } catch(e){}
     _assignSSE = null;
     scheduleAssignSSERetry();
@@ -2113,7 +2144,11 @@ function renderSettings() {
         <button class="st-qbtn" onclick="autoDistribute()">🎲 แจกงานอัตโนมัติ</button>
         <button class="st-qbtn danger" onclick="clearAllAssignments()">🗑️ ล้างทั้งหมด</button>
         <button class="st-qbtn" onclick="distributeUnassigned()">📦 แจกเฉพาะที่ยังว่าง</button>
+        <button class="st-qbtn" onclick="manualSyncFromCloud()" style="border-color:#059669;color:#059669">🔄 ดึงข้อมูลล่าสุดจาก Cloud</button>
+        <button class="st-qbtn" onclick="testFirebaseSync()">🧪 ทดสอบ Sync</button>
       </div>
+
+      <div id="syncStatusPanel"></div>
 
       <div class="st-filter-bar">
         <span style="font-size:12px;color:var(--text-muted);font-weight:600;margin-right:4px">🔍</span>
@@ -2471,6 +2506,114 @@ function resetAssignments() {
   selectedStaff = null;
   renderSettings();
   showToast('↩️ รีเซ็ตแล้ว — กลับสู่ค่าที่บันทึกล่าสุด');
+}
+
+// ════════════════════════════════════════════════
+//  SYNC TOOLS — Test & Manual Sync
+// ════════════════════════════════════════════════
+async function testFirebaseSync() {
+  const panel = document.getElementById('syncStatusPanel');
+  if (!panel) return;
+
+  panel.innerHTML = `<div class="settings-info-box" style="border-color:#fcd34d;background:#fffbeb;flex-direction:column;gap:8px">
+    <div style="font-weight:700;color:#92400e">🧪 กำลังทดสอบการเชื่อมต่อ Firebase...</div>
+    <div id="syncTestLog" style="font-size:11px;color:var(--text-muted);line-height:1.8;font-family:'IBM Plex Mono',monospace"></div>
+  </div>`;
+  const log = document.getElementById('syncTestLog');
+  function addLog(msg, ok) {
+    log.innerHTML += `<div>${ok ? '✅' : '❌'} ${msg}</div>`;
+  }
+
+  // Test 1: Can we reach Firebase?
+  try {
+    const r1 = await fetch(`${DB_URL}/.json`, { method: 'GET', cache: 'no-store' });
+    if (r1.ok) addLog(`เชื่อมต่อ Firebase สำเร็จ (HTTP ${r1.status})`, true);
+    else addLog(`Firebase ตอบ HTTP ${r1.status} — ตรวจสอบ URL`, false);
+  } catch(e) {
+    addLog(`เชื่อมต่อ Firebase ไม่ได้: ${e.message}`, false);
+    panel.innerHTML += `<div style="margin-top:8px;padding:10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:12px;color:#dc2626">
+      <strong>แนะนำ:</strong> ตรวจสอบ Firebase URL และ internet connection</div>`;
+    return;
+  }
+
+  // Test 2: Can we READ assignments?
+  try {
+    const r2 = await fetch(`${DB_URL}/assignments.json`, { cache: 'no-store' });
+    const d2 = await r2.json();
+    if (r2.ok) {
+      const hasData = d2 && typeof d2 === 'object' && Object.keys(d2).length > 0;
+      addLog(`อ่าน assignments: ${hasData ? Object.keys(d2).length + ' keys' : 'ว่าง (null)'} — HTTP ${r2.status}`, true);
+    } else {
+      addLog(`อ่าน assignments ไม่ได้ HTTP ${r2.status} — ตรวจ Firebase Rules`, false);
+    }
+  } catch(e) {
+    addLog(`อ่าน assignments error: ${e.message}`, false);
+  }
+
+  // Test 3: Can we WRITE a test value?
+  try {
+    const testPayload = { _syncTest: Date.now() };
+    const r3 = await fetch(`${DB_URL}/assignments/_syncTest.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Date.now())
+    });
+    if (r3.ok) {
+      addLog('เขียนข้อมูลทดสอบสำเร็จ — Firebase Rules อนุญาต write', true);
+      // Clean up test value
+      await fetch(`${DB_URL}/assignments/_syncTest.json`, { method: 'DELETE' });
+    } else {
+      addLog(`เขียนข้อมูลไม่ได้ HTTP ${r3.status} — ต้องแก้ Firebase Rules`, false);
+    }
+  } catch(e) {
+    addLog(`เขียนข้อมูล error: ${e.message}`, false);
+  }
+
+  // Test 4: SSE status
+  const sseOk = _assignSSE && _assignSSE.readyState === EventSource.OPEN;
+  addLog(`SSE Assignments: ${sseOk ? 'เชื่อมต่ออยู่' : 'ไม่ได้เชื่อมต่อ'}`, sseOk);
+  const sse1Ok = _sseInstance && _sseInstance.readyState === EventSource.OPEN;
+  addLog(`SSE StoreStatuses: ${sse1Ok ? 'เชื่อมต่ออยู่' : 'ไม่ได้เชื่อมต่อ'}`, sse1Ok);
+
+  // Show Firebase Rules recommendation
+  panel.innerHTML += `<div style="margin-top:10px;padding:12px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:12px;color:var(--accent-dark);line-height:1.8">
+    <strong>📌 Firebase Rules ที่ต้องตั้ง:</strong><br>
+    ไปที่ <strong>Firebase Console → Realtime Database → Rules</strong> แล้ววาง:<br>
+    <code style="display:block;background:#1e293b;color:#34d399;padding:10px;border-radius:6px;margin-top:6px;font-size:11px;white-space:pre;overflow-x:auto">{
+  "rules": {
+    "storeStatuses": {
+      ".read": true,
+      ".write": true
+    },
+    "assignments": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}</code>
+    <div style="margin-top:6px;font-size:11px;color:var(--text-muted)">⚠️ เป็น public rules — เหมาะสำหรับ internal tools เท่านั้น</div>
+  </div>`;
+}
+
+async function manualSyncFromCloud() {
+  showToast('🔄 กำลังดึงข้อมูลจาก Cloud...');
+  try {
+    const res = await fetch(`${DB_URL}/assignments.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+      applyAssignmentSnapshot(data);
+      assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
+      stHasChanges = false;
+      renderAll();
+      renderSettings();
+      showToast('✅ ดึงข้อมูลล่าสุดจาก Cloud สำเร็จ');
+    } else {
+      showToast('⚠️ Cloud ยังไม่มีข้อมูล — ลองบันทึกจากเครื่องนี้ก่อน');
+    }
+  } catch(e) {
+    showToast('❌ ดึงข้อมูลไม่ได้: ' + e.message);
+  }
 }
 
 init();
