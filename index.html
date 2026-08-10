@@ -993,14 +993,18 @@ async function connectFirebase() {
   }
   // Load assignments from Firebase (overrides localStorage)
   await loadAssignmentsFromFirebase();
-  startSSEListener();   // always start listener, even after error (will retry)
-  startAssignmentSSE(); // SSE for assignment sync
+  startSSEListener();   // SSE for store statuses AND embedded assignments
 }
 
 /* Apply a full snapshot from Firebase (data may be null on first run) */
 function applyFirebaseSnapshot(data) {
   const defaults = buildDefaultStoreState();
   if (data && typeof data === 'object' && !Array.isArray(data)) {
+    // Extract embedded assignments if present
+    if (data.__assignments__ && !_isSavingAssignments) {
+      applyAssignmentSnapshot(data.__assignments__);
+    }
+    // Apply store statuses (skip __assignments__ key)
     Object.keys(defaults).forEach(k => {
       storeState[k] = {
         ...defaults[k],
@@ -1055,12 +1059,17 @@ function startSSEListener() {
         if (data && typeof data === 'object') {
           applyFirebaseSnapshot(data);
         }
+      } else if (path === '/__assignments__' || path.startsWith('/__assignments__/')) {
+        // Assignment update from another device
+        if (!_isSavingAssignments && data && typeof data === 'object') {
+          applyAssignmentSnapshot(data);
+          console.log('[SSE] ✅ assignment sync from other device');
+        }
       } else {
         // Single child path like "/ST6"
         const storeCode = path.replace(/^\//, '').split('/')[0];
         if (storeCode && storeState[storeCode]) {
           if (data === null) {
-            // Node deleted — reset to pending
             storeState[storeCode].status = 'pending';
           } else {
             applyFirebasePatch(storeCode, data);
@@ -1147,45 +1156,35 @@ async function pushInitialData() {
 
 // ════════════════════════════════════════════════
 //  FIREBASE — Inspection Assignments Sync
-//  Uses index keys (s0, s1...) to avoid Thai character key issues
-//  Firebase is SOURCE OF TRUTH → localStorage is offline fallback
+//  ★ KEY FIX: stored INSIDE storeStatuses/__assignments__
+//  so it inherits the SAME Firebase Rules that already work.
+//  No separate SSE needed — existing storeStatuses SSE detects changes.
 // ════════════════════════════════════════════════
-let _assignSSE = null;
-let _assignSSERetryTimer = null;
-let _assignSSERetryDelay = 3000;
-let _lastAssignPollData = null;
 let _isSavingAssignments = false;
 
 async function loadAssignmentsFromFirebase() {
   if (isOfflineMode || !DB_URL) {
-    loadAssignmentsFromStorage(); // offline fallback
+    loadAssignmentsFromStorage();
     return;
   }
   try {
-    const res = await fetch(`${DB_URL}/assignments.json`, { cache: 'no-store' });
+    // Read from storeStatuses/__assignments__  (SAME rules as store statuses!)
+    const res = await fetch(`${DB_URL}/storeStatuses/__assignments__.json`, { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
     if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-      // Firebase has data → use it (SOURCE OF TRUTH)
-      const converted = firebaseFormatToAssignments(data);
-      if (converted) {
-        inspectionAssignments = converted;
-        assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
-        saveAssignmentsToStorage();
-        syncAssignmentsToZones();
-        _lastAssignPollData = JSON.stringify(data);
-        console.log('[Firebase] ✅ assignments loaded from cloud');
-        return;
-      }
+      applyAssignmentSnapshot(data);
+      console.log('[Firebase] ✅ assignments loaded from storeStatuses/__assignments__');
+      return;
     }
 
-    // Firebase is empty → push current defaults up so other devices get them
-    console.log('[Firebase] assignments empty — pushing defaults...');
+    // Firebase node empty → push local data so other devices get it
+    console.log('[Firebase] assignments empty — pushing local data...');
     await saveAssignmentsToFirebase();
 
   } catch(e) {
-    console.warn('[Firebase] loadAssignments failed:', e.message, '— trying localStorage');
+    console.warn('[Firebase] loadAssignments failed:', e.message, '— using localStorage');
     loadAssignmentsFromStorage();
   }
 }
@@ -1194,7 +1193,6 @@ function applyAssignmentSnapshot(fbData) {
   if (!fbData || typeof fbData !== 'object') return;
   const converted = firebaseFormatToAssignments(fbData);
   if (!converted) return;
-
   inspectionAssignments = converted;
   assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
   saveAssignmentsToStorage();
@@ -1219,99 +1217,21 @@ async function saveAssignmentsToFirebase() {
   updateSyncBadge('syncing');
   const fbData = assignmentsToFirebaseFormat();
   try {
-    const res = await fetch(`${DB_URL}/assignments.json`, {
+    // Write to storeStatuses/__assignments__  (SAME rules as store statuses!)
+    const res = await fetch(`${DB_URL}/storeStatuses/__assignments__.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(fbData)
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    _lastAssignPollData = JSON.stringify(fbData);
     updateSyncBadge('synced');
-    console.log('[Firebase] ✅ assignments saved to cloud');
+    console.log('[Firebase] ✅ assignments saved → SSE will auto-sync to all devices');
   } catch(e) {
     console.warn('[Firebase] saveAssignments failed:', e.message);
     updateSyncBadge('offline');
     showToast('⚠️ บันทึกในเครื่อง — Sync ไม่ได้ ตรวจสอบอินเทอร์เน็ต');
   }
   setTimeout(() => { _isSavingAssignments = false; }, 2000);
-}
-
-/* SSE listener for assignment changes from other devices */
-function startAssignmentSSE() {
-  if (isOfflineMode || !DB_URL) return;
-  if (_assignSSE) { try { _assignSSE.close(); } catch(e){} _assignSSE = null; }
-  if (_assignSSERetryTimer) { clearTimeout(_assignSSERetryTimer); _assignSSERetryTimer = null; }
-
-  let es2;
-  try {
-    es2 = new EventSource(`${DB_URL}/assignments.json`);
-  } catch(e) {
-    scheduleAssignSSERetry();
-    return;
-  }
-  _assignSSE = es2;
-
-  es2.addEventListener('put', (e) => {
-    if (_isSavingAssignments) return;
-    try {
-      const msg = JSON.parse(e.data);
-      const path = msg.path || '/';
-      const data = msg.data;
-
-      if (path === '/' || path === '') {
-        // Full snapshot
-        if (data && typeof data === 'object') {
-          applyAssignmentSnapshot(data);
-          if (currentRole) { renderAll(); showSyncFlash(); }
-          console.log('[SSE-Assign] ✅ full snapshot from other device');
-        }
-      } else {
-        // Partial: single staff index like "/s0"
-        const key = path.replace(/^\//, '').split('/')[0]; // "s0", "s1" etc
-        const idx = parseInt(key.replace('s',''), 10);
-        if (!isNaN(idx) && idx >= 0 && idx < STAFF_LIST.length) {
-          const staffName = STAFF_LIST[idx].name;
-          if (data === null) {
-            inspectionAssignments[staffName] = [];
-          } else if (Array.isArray(data)) {
-            inspectionAssignments[staffName] = data.filter(c => ALL_STORE_CODES.includes(c));
-          }
-          assignmentsSnapshot = JSON.parse(JSON.stringify(inspectionAssignments));
-          saveAssignmentsToStorage();
-          syncAssignmentsToZones();
-          if (currentRole) { renderAll(); showSyncFlash(); }
-          console.log('[SSE-Assign] partial update:', staffName);
-        }
-      }
-    } catch(ex) { console.warn('[SSE-Assign] parse error:', ex); }
-  });
-
-  es2.addEventListener('patch', (e) => {
-    if (_isSavingAssignments) return;
-    try {
-      const msg = JSON.parse(e.data);
-      if (msg.data && typeof msg.data === 'object') {
-        applyAssignmentSnapshot(msg.data);
-        if (currentRole) { renderAll(); showSyncFlash(); }
-      }
-    } catch(ex) {}
-  });
-
-  es2.onopen = () => { _assignSSERetryDelay = 3000; console.log('[SSE-Assign] connected'); };
-  es2.onerror = () => {
-    try { es2.close(); } catch(e){}
-    _assignSSE = null;
-    scheduleAssignSSERetry();
-  };
-}
-
-function scheduleAssignSSERetry() {
-  if (_assignSSERetryTimer) return;
-  _assignSSERetryTimer = setTimeout(() => {
-    _assignSSERetryTimer = null;
-    _assignSSERetryDelay = Math.min(_assignSSERetryDelay * 2, 30000);
-    startAssignmentSSE();
-  }, _assignSSERetryDelay);
 }
 
 /* Write a single store status update */
@@ -1749,40 +1669,18 @@ let _lastPollData = null;   // JSON string snapshot for change detection
 
 async function pollFirebase() {
   if (isOfflineMode || !DB_URL) return;
-  let anyChange = false;
-
-  // Poll store statuses
   try {
+    // Single fetch — assignments are embedded inside storeStatuses/__assignments__
     const res = await fetch(`${DB_URL}/storeStatuses.json`, { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      const snap = JSON.stringify(data);
-      if (snap !== _lastPollData) {
-        _lastPollData = snap;
-        applyFirebaseSnapshot(data);
-        anyChange = true;
-      }
+    if (!res.ok) return;
+    const data = await res.json();
+    const snap = JSON.stringify(data);
+    if (snap !== _lastPollData) {
+      _lastPollData = snap;
+      applyFirebaseSnapshot(data); // handles both store statuses AND assignments
+      if (currentRole) { renderAll(); showSyncFlash(); }
     }
-  } catch(e) { /* silent */ }
-
-  // Poll assignments (catches changes from other devices)
-  if (!_isSavingAssignments) {
-    try {
-      const res2 = await fetch(`${DB_URL}/inspectionAssignments.json`, { cache: 'no-store' });
-      if (res2.ok) {
-        const data2 = await res2.json();
-        const snap2 = JSON.stringify(data2);
-        if (snap2 !== _lastAssignPollData && data2 && typeof data2 === 'object') {
-          _lastAssignPollData = snap2;
-          applyAssignmentSnapshot(data2);
-          anyChange = true;
-          console.log('[Poll] assignment changes detected');
-        }
-      }
-    } catch(e) { /* silent */ }
-  }
-
-  if (anyChange && currentRole) { renderAll(); showSyncFlash(); }
+  } catch(e) { /* silent — SSE will handle reconnect */ }
 }
 
 function startPolling() {
@@ -1797,7 +1695,6 @@ window.addEventListener('online', () => {
   updateDbStatusBadge('connecting');
   // Reconnect SSE and do an immediate poll on coming back online
   startSSEListener();
-  startAssignmentSSE();
   pollFirebase();
 });
 
@@ -1814,9 +1711,6 @@ document.addEventListener('visibilitychange', () => {
     // Also restart SSE if it dropped
     if (!_sseInstance || _sseInstance.readyState === EventSource.CLOSED) {
       startSSEListener();
-    }
-    if (!_assignSSE || _assignSSE.readyState === EventSource.CLOSED) {
-      startAssignmentSSE();
     }
   }
 });
@@ -2538,7 +2432,7 @@ async function testFirebaseSync() {
 
   // Test 2: Can we READ assignments?
   try {
-    const r2 = await fetch(`${DB_URL}/assignments.json`, { cache: 'no-store' });
+    const r2 = await fetch(`${DB_URL}/storeStatuses/__assignments__.json`, { cache: 'no-store' });
     const d2 = await r2.json();
     if (r2.ok) {
       const hasData = d2 && typeof d2 === 'object' && Object.keys(d2).length > 0;
@@ -2553,7 +2447,7 @@ async function testFirebaseSync() {
   // Test 3: Can we WRITE a test value?
   try {
     const testPayload = { _syncTest: Date.now() };
-    const r3 = await fetch(`${DB_URL}/assignments/_syncTest.json`, {
+    const r3 = await fetch(`${DB_URL}/storeStatuses/__assignments__/_syncTest.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Date.now())
@@ -2561,7 +2455,7 @@ async function testFirebaseSync() {
     if (r3.ok) {
       addLog('เขียนข้อมูลทดสอบสำเร็จ — Firebase Rules อนุญาต write', true);
       // Clean up test value
-      await fetch(`${DB_URL}/assignments/_syncTest.json`, { method: 'DELETE' });
+      await fetch(`${DB_URL}/storeStatuses/__assignments__/_syncTest.json`, { method: 'DELETE' });
     } else {
       addLog(`เขียนข้อมูลไม่ได้ HTTP ${r3.status} — ต้องแก้ Firebase Rules`, false);
     }
@@ -2570,10 +2464,8 @@ async function testFirebaseSync() {
   }
 
   // Test 4: SSE status
-  const sseOk = _assignSSE && _assignSSE.readyState === EventSource.OPEN;
-  addLog(`SSE Assignments: ${sseOk ? 'เชื่อมต่ออยู่' : 'ไม่ได้เชื่อมต่อ'}`, sseOk);
   const sse1Ok = _sseInstance && _sseInstance.readyState === EventSource.OPEN;
-  addLog(`SSE StoreStatuses: ${sse1Ok ? 'เชื่อมต่ออยู่' : 'ไม่ได้เชื่อมต่อ'}`, sse1Ok);
+  addLog(`SSE StoreStatuses (+ Assignments): ${sse1Ok ? 'เชื่อมต่ออยู่' : 'ไม่ได้เชื่อมต่อ'}`, sse1Ok);
 
   // Show Firebase Rules recommendation
   panel.innerHTML += `<div style="margin-top:10px;padding:12px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:12px;color:var(--accent-dark);line-height:1.8">
@@ -2598,7 +2490,7 @@ async function testFirebaseSync() {
 async function manualSyncFromCloud() {
   showToast('🔄 กำลังดึงข้อมูลจาก Cloud...');
   try {
-    const res = await fetch(`${DB_URL}/assignments.json`, { cache: 'no-store' });
+    const res = await fetch(`${DB_URL}/storeStatuses/__assignments__.json`, { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     if (data && typeof data === 'object' && Object.keys(data).length > 0) {
@@ -2607,9 +2499,9 @@ async function manualSyncFromCloud() {
       stHasChanges = false;
       renderAll();
       renderSettings();
-      showToast('✅ ดึงข้อมูลล่าสุดจาก Cloud สำเร็จ');
+      showToast('✅ ดึงข้อมูลล่าสุดจาก Cloud สำเร็จ — ข้อมูลตรงกันทุกเครื่อง');
     } else {
-      showToast('⚠️ Cloud ยังไม่มีข้อมูล — ลองบันทึกจากเครื่องนี้ก่อน');
+      showToast('⚠️ Cloud ยังไม่มีข้อมูล — ลองกดบันทึกจากเครื่องนี้ก่อน');
     }
   } catch(e) {
     showToast('❌ ดึงข้อมูลไม่ได้: ' + e.message);
