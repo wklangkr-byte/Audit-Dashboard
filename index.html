@@ -1347,6 +1347,33 @@ function getStats(zones) {
   return {total:all.size,complete,inprogress,pending};
 }
 
+// Assignment-based stats: counts only stores that are actually assigned to people
+function getAssignmentStats() {
+  let people = STAFF_LIST.map(staff => ({
+    ...staff,
+    stores: inspectionAssignments[staff.name] || []
+  }));
+
+  // Apply regional filter (by staff's regional)
+  if (currentFilter !== 'all') {
+    people = people.filter(p => p.regional === currentFilter);
+  }
+
+  // Collect unique stores across filtered people
+  const assignedStores = new Set();
+  people.forEach(p => p.stores.forEach(s => assignedStores.add(s)));
+
+  let complete=0, inprogress=0, pending=0;
+  assignedStores.forEach(s => {
+    const st = storeState[s]?.status || 'pending';
+    if (st==='complete') complete++;
+    else if (st==='inprogress') inprogress++;
+    else pending++;
+  });
+
+  return { total: assignedStores.size, complete, inprogress, pending };
+}
+
 // ════════════════════════════════════════════════
 //  RENDER
 // ════════════════════════════════════════════════
@@ -1358,7 +1385,7 @@ function renderAll() {
 }
 
 function renderKPI() {
-  const s = getStats(getFilteredZones()), pct = s.total?Math.round(s.complete/s.total*100):0;
+  const s = getAssignmentStats(), pct = s.total?Math.round(s.complete/s.total*100):0;
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card total" data-label="Total Store"><div class="kpi-inner">
       <div class="kpi-value">${s.total}</div><div class="kpi-label">สาขาทั้งหมด</div>
@@ -1382,17 +1409,28 @@ function renderRegionals() {
   const zones=getFilteredZones(), regs=[...new Set(zones.map(z=>z.regional))];
   document.getElementById('regionalCount').textContent = regs.length+' Regional';
   document.getElementById('regionalCards').innerHTML = regs.map(r=>{
-    const rz=zones.filter(z=>z.regional===r), s=getStats(rz);
-    const pct=s.total?Math.round(s.complete/s.total*100):0, cp=s.total?s.complete/s.total*100:0, ip=s.total?s.inprogress/s.total*100:0;
+    // Count assigned stores for staff in this regional
+    const regPeople = STAFF_LIST.filter(st => st.regional === r);
+    const regStores = new Set();
+    regPeople.forEach(p => (inspectionAssignments[p.name]||[]).forEach(s => regStores.add(s)));
+    let c=0, ip=0, nc=0;
+    regStores.forEach(s => {
+      const st = storeState[s]?.status || 'pending';
+      if (st==='complete') c++; else if (st==='inprogress') ip++; else nc++;
+    });
+    const total = regStores.size;
+    const pct = total ? Math.round(c/total*100) : 0;
+    const cp = total ? c/total*100 : 0, ipp = total ? ip/total*100 : 0;
+    const staffCount = regPeople.filter(p => (inspectionAssignments[p.name]||[]).length > 0).length;
     return `<div class="regional-card">
       <div class="rc-header"><div class="rc-name">${r}</div>
-        <div class="rc-total">${rz.length} Zones · ${s.total} Stores · ${pct}%</div></div>
+        <div class="rc-total">${staffCount} คน · ${total} Stores · ${pct}%</div></div>
       <div class="rc-stats">
-        <div class="rc-stat c"><div class="rc-stat-val">${s.complete}</div><div class="rc-stat-label">Complete</div></div>
-        <div class="rc-stat ip"><div class="rc-stat-val">${s.inprogress}</div><div class="rc-stat-label">In Prog</div></div>
-        <div class="rc-stat nc"><div class="rc-stat-val">${s.pending}</div><div class="rc-stat-label">Pending</div></div>
+        <div class="rc-stat c"><div class="rc-stat-val">${c}</div><div class="rc-stat-label">Complete</div></div>
+        <div class="rc-stat ip"><div class="rc-stat-val">${ip}</div><div class="rc-stat-label">In Prog</div></div>
+        <div class="rc-stat nc"><div class="rc-stat-val">${nc}</div><div class="rc-stat-label">Pending</div></div>
       </div>
-      <div class="rc-progress"><div class="complete" style="width:${cp}%"></div><div class="inprogress" style="width:${ip}%"></div></div>
+      <div class="rc-progress"><div class="complete" style="width:${cp}%"></div><div class="inprogress" style="width:${ipp}%"></div></div>
     </div>`;
   }).join('');
 }
