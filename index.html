@@ -1338,7 +1338,14 @@ function getFilteredZones() {
   return currentFilter==='all' ? RAW_ZONES : RAW_ZONES.filter(z=>z.regional===currentFilter);
 }
 function getFilteredStores() {
-  const s = new Set(); getFilteredZones().forEach(z=>z.stores.forEach(c=>s.add(c))); return s;
+  // Assignment-based: get stores assigned to staff filtered by regional
+  const stores = new Set();
+  let people = STAFF_LIST;
+  if (currentFilter !== 'all') {
+    people = people.filter(p => p.regional === currentFilter);
+  }
+  people.forEach(p => (inspectionAssignments[p.name] || []).forEach(s => stores.add(s)));
+  return stores;
 }
 function getStats(zones) {
   const all = new Set(); zones.forEach(z=>z.stores.forEach(s=>all.add(s)));
@@ -1490,25 +1497,42 @@ function setStoreFilter(val,btn) {
 }
 
 function renderStores() {
-  const filtered=getFilteredStores(), search=(document.getElementById('storeSearch')?.value||'').toLowerCase();
-  const icon={complete:'✅',inprogress:'🔄',pending:'⏸'}, entries=[];
-  RAW_ZONES.forEach(z=>z.stores.forEach(s=>{
-    if(!filtered.has(s)) return;
-    const st=storeState[s]?.status||'pending';
-    if(currentStoreFilter!=='all'&&st!==currentStoreFilter) return;
-    if(search&&!s.toLowerCase().includes(search)) return;
-    const assignee = getStoreAssignee(s);
-    const assigneeNick = assignee ? (STAFF_LIST.find(sf=>sf.name===assignee)?.nickname||'') : '';
-    entries.push({code:s,status:st,zone:z.zone,regional:z.regional,assignee,assigneeNick});
-  }));
-  document.getElementById('storesGrid').innerHTML = entries.map(e=>
+  const filtered = getFilteredStores();
+  const search = (document.getElementById('storeSearch')?.value||'').toLowerCase();
+  const icon = {complete:'✅', inprogress:'🔄', pending:'⏸'};
+  const entries = [];
+
+  // Iterate through assigned stores from staff
+  STAFF_LIST.forEach(staff => {
+    const stores = inspectionAssignments[staff.name] || [];
+    stores.forEach(s => {
+      if (!filtered.has(s)) return;
+      const st = storeState[s]?.status || 'pending';
+      if (currentStoreFilter !== 'all' && st !== currentStoreFilter) return;
+      if (search && !s.toLowerCase().includes(search)) return;
+      const info = STORE_LOC_NAMES[s] || {};
+      entries.push({code:s, status:st, zone:info.zone||'', regional:info.regional||'', assigneeNick:staff.nickname});
+    });
+  });
+
+  // Deduplicate (a store could appear in multiple staff — shouldn't but guard)
+  const seen = new Set();
+  const unique = entries.filter(e => { if (seen.has(e.code)) return false; seen.add(e.code); return true; });
+
+  // Sort by store code
+  unique.sort((a,b) => {
+    const na = parseInt(a.code.replace('ST',''),10), nb = parseInt(b.code.replace('ST',''),10);
+    return na - nb;
+  });
+
+  document.getElementById('storesGrid').innerHTML = unique.map(e =>
     `<div class="store-tile ${e.status}" onclick="openModal('${e.code}')">
       <div class="store-code">${e.code}</div>
       <div class="store-status-icon">${icon[e.status]}</div>
       <div class="store-regional">${e.zone}</div>
       ${e.assigneeNick ? `<div style="font-size:8px;color:var(--accent-dark);margin-top:2px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.assigneeNick}</div>` : ''}
     </div>`
-  ).join('')||`<div style="color:var(--text-dim);font-size:13px;padding:20px;grid-column:1/-1">ไม่พบสาขา</div>`;
+  ).join('') || `<div style="color:var(--text-dim);font-size:13px;padding:20px;grid-column:1/-1">ไม่พบสาขา</div>`;
 }
 
 let inspPosFilter = 'all';
